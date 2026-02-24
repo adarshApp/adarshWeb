@@ -1,0 +1,139 @@
+:root {
+  --bg-color: #fcfcfc;
+  --text-main: #1d1d1f;
+  --text-muted: #86868b;
+  --accent-yellow: #fef08a;
+}
+
+.home-wrapper {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero-container {
+  text-align: center;
+  max-width: 800px;
+  z-index: 10;
+  padding: 20px;
+}
+
+/* Sticky Note Styling */
+.sticky-note-wrapper {
+  position: relative;
+  width: 160px;
+  margin: 0 auto 40px;
+  transform: rotate(-3deg);
+}
+
+.sticky-note {
+  background-color: #fff44f;
+  padding: 20px;
+  width: 150px;
+  height: 150px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.handwritten-text {
+  font-family: "Brush Script MT", "Comic Sans MS", cursive;
+  font-size: 1.2rem;
+  color: #4a4a4a;
+  line-height: 1.2;
+}
+
+.sticky-shadow {
+  position: absolute;
+  bottom: -15px;
+  right: -20px;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  filter: blur(20px);
+  z-index: 1;
+}
+
+/* Typography */
+.hero-title {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+  line-height: 1.1;
+}
+
+.hero-title span {
+  color: #333;
+}
+
+/* Input & Button */
+.cta-group {
+  background: white;
+  padding: 8px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+  border: 1px solid #efefef;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto 30px;
+}
+
+.cta-input {
+  flex: 1;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  outline: none;
+  background: transparent;
+}
+
+.cta-button {
+  background: #1d1d1f;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 40px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.cta-button:hover {
+  opacity: 0.9;
+}
+
+.hero-footer {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+/* Decorative Assets */
+.floating-item {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.paperclip-top { top: 5%; right: 5%; transform: rotate(45deg); }
+.binder-clip-top { top: 10%; left: 5%; transform: rotate(-20deg); }
+.paperclip-bottom { bottom: 10%; left: 8%; }
+.binder-clip-bottom { bottom: 5%; right: 8%; transform: rotate(15deg); }
+
+@media (max-width: 600px) {
+  .hero-title { font-size: 2rem; }
+  .cta-group { flex-direction: column; border-radius: 20px; }
+  .cta-button { width: 100%; margin-top: 10px; }
+}

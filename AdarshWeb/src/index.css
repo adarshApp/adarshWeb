@@ -1,0 +1,187 @@
+/* ===============================
+   GLOBAL RESET
+================================ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===============================
+   ROOT VARIABLES (LIGHT THEME)
+================================ */
+:root {
+  /* BACKGROUND */
+  --bg-main: linear-gradient(
+    135deg,
+    #c7d2fe,
+    #e0e7ff,
+    #f8fafc
+  );
+
+  /* GLASS */
+  --glass-bg: rgba(255, 255, 255, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.4);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+
+  /* TEXT */
+  --text-primary: #1f2937;
+  --text-secondary: #374151;
+
+  /* ACCENT */
+  --accent: #6366f1;
+
+  /* UI */
+  --radius: 16px;
+}
+
+/* ===============================
+   DARK THEME
+================================ */
+[data-theme="dark"] {
+  --bg-main: linear-gradient(
+    135deg,
+    #0b0f14,
+    #111827,
+    #020617
+  );
+
+  --glass-bg: rgba(20, 25, 32, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+}
+
+/* ===============================
+   AMOLED THEME (TRUE BLACK)
+================================ */
+[data-theme="amoled"] {
+  --bg-main: #000000;
+
+  --glass-bg: rgba(10, 10, 10, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-shadow: none;
+
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+}
+
+/* AMOLED POLISH */
+[data-theme="amoled"] .glass {
+  box-shadow: none;
+  border: 1px solid var(--glass-border);
+}
+
+/* ===============================
+   BODY
+================================ */
+body {
+  min-height: 100vh;
+  font-family: "Inter", system-ui, sans-serif;
+
+  background: var(--bg-main);
+  color: var(--text-primary);
+
+  overflow-x: hidden;
+}
+
+/* ===============================
+   GLASS CONTAINER (REUSABLE)
+================================ */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
+
+  padding: 1.25rem;
+}
+
+/* ===============================
+   COMMON ELEMENTS
+================================ */
+h1, h2, h3, h4, h5 {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ===============================
+   BUTTON BASE
+================================ */
+.btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+
+  background: var(--accent);
+  color: #fff;
+  font-weight: 500;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+}
+
+/* ===============================
+   INPUTS (GLASS STYLE)
+================================ */
+input,
+select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+
+  outline: none;
+  color: var(--text-primary);
+}
+
+input::placeholder {
+  color: #6b7280;
+}
+
+/* ===============================
+   SCROLLBAR
+================================ */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+}
+
+/* ===============================
+   ACCESSIBILITY
+================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
