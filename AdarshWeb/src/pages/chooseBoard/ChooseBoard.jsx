@@ -11,10 +11,10 @@ export default function ChooseBoard() {
   const [loading, setLoading] = useState(false);
 
   const boards = [
-    "CBSE", "ICSE", "CHSE", "State", "CGBSE", "COHSEM", "DHSE", "DPUE",
-    "GBSHE", "GSEB", "HBSE", "HPBOSE", "HSE", "JAC", "MBOSE", "MBSE",
-    "MPBSE", "MSBSHSE", "NBSE", "PSEB", "RBSE", "SBSE", "TBSE",
-    "TSBIE", "UBSE", "UPMSP", "WBCHSE",
+    "CBSE","ICSE","CHSE","State","CGBSE","COHSEM","DHSE","DPUE",
+    "GBSHE","GSEB","HBSE","HPBOSE","HSE","JAC","MBOSE","MBSE",
+    "MPBSE","MSBSHSE","NBSE","PSEB","RBSE","SBSE","TBSE",
+    "TSBIE","UBSE","UPMSP","WBCHSE",
   ];
 
   const classes = ["10", "11", "12"];
@@ -27,7 +27,10 @@ export default function ChooseBoard() {
     });
   };
 
+  /* ================= SAVE ONBOARDING ================= */
   const handleClassSelect = async (classLevel) => {
+    if (loading) return;
+
     if (!selectedBoard) {
       alert("Please select a board first");
       return;
@@ -54,12 +57,17 @@ export default function ChooseBoard() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to save onboarding");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Onboarding failed");
 
+      /* ✅ SAVE STATE LOCALLY */
       localStorage.setItem("board", selectedBoard);
       localStorage.setItem("classLevel", classLevel);
+      localStorage.setItem("onboardingCompleted", "true");
 
+      /* ✅ GO TO HOME */
       navigate("/home", { replace: true });
+
     } catch (err) {
       alert(err.message || "Something went wrong");
     } finally {
@@ -70,6 +78,8 @@ export default function ChooseBoard() {
   return (
     <div className="board-wrapper">
       <div className="board-glass">
+
+        {/* ================= BOARD SELECTION ================= */}
         {!selectedBoard && (
           <>
             <h1>Choose Your Board</h1>
@@ -104,6 +114,7 @@ export default function ChooseBoard() {
           </>
         )}
 
+        {/* ================= CLASS SELECTION ================= */}
         {selectedBoard && (
           <>
             <button
@@ -140,7 +151,9 @@ export default function ChooseBoard() {
               ))}
             </div>
 
-            {loading && <p className="loading-text">Saving your preferences…</p>}
+            {loading && (
+              <p className="loading-text">Saving your preferences…</p>
+            )}
           </>
         )}
       </div>

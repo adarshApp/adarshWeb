@@ -1,0 +1,81 @@
+.chapter-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8fafc, #eef2ff);
+  padding: 24px;
+}
+
+.chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.chapter-header-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.chapter-content {
+  max-width: 720px;
+}
+
+.chapter-card {
+  background: #ffffff;
+  padding: 22px;
+  border-radius: 20px;
+  border: 1px solid #f1f5f9;
+  margin-bottom: 20px;
+}
+
+.chapter-card h3 {
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.chapter-card p {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.action-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid #f1f5f9;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+}
+
+.action-card h4 {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.action-card span {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.center {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #64748b;
+}
+
+.error {
+  color: #94a3b8;
+}

@@ -1,268 +1,195 @@
-import "./dashBoard.css";
-import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./dashBoard.css";
+import {
+  ArrowLeft,
+  User,
+  FileText,
+  Compass,
+  Layers,
+  PenTool,
+  Zap,
+  Beaker,
+  Divide,
+  Activity,
+} from "lucide-react";
 
-import Header from "../header/Header";
+const API_BASE_URL = "https://api.adarsh.store";
 
+/* ---------- ICON MAP ---------- */
+const subjectIcons = {
+  physics: <Zap size={22} />,
+  chemistry: <Beaker size={22} />,
+  mathematics: <Divide size={22} />,
+  biology: <Activity size={22} />,
+};
 
 export default function Dashboard() {
   const navigate = useNavigate();
-
-  const [board, setBoard] = useState("");
-  const [classLevel, setClassLevel] = useState("");
-  const [progressData, setProgressData] = useState([]);
   const [subjects, setSubjects] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  /* ================= LOAD USER ================= */
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/user/me`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) throw new Error("Unauthorized");
-
-        const user = await res.json();
-
-        if (!user.board || !user.classLevel) {
-          navigate("/choose-board");
-          return;
-        }
-
-        setBoard(user.board);
-        setClassLevel(user.classLevel);
-        setProgressData(user.progress || []);
-      } catch {
-        navigate("/login");
-      }
-    };
-
-    fetchUser();
-  }, [navigate]);
-
-  /* ================= LOAD PROGRESS LIVE ================= */
-  useEffect(() => {
-    const fetchProgress = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/progress`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!res.ok) return;
-
-      const data = await res.json();
-      setProgressData(data || []);
-    };
-
-    // Initial load
-    fetchProgress();
-
-    // ✅ Listen when chapter marked completed
-    window.addEventListener("progressUpdated", fetchProgress);
-
-    return () => {
-      window.removeEventListener("progressUpdated", fetchProgress);
-    };
+    loadDashboard();
   }, []);
 
-  /* ================= LOAD SUBJECTS ================= */
-  useEffect(() => {
-    const fetchSubjects = async () => {
-      if (!board || !classLevel) return;
+  async function loadDashboard() {
+    try {
+      setLoading(true);
 
       const token = localStorage.getItem("token");
+      const board = localStorage.getItem("board");
+      const classLevel = localStorage.getItem("classLevel");
 
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/syllabus/${classLevel}/${board}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      if (!res.ok) {
-        setLoading(false);
+      if (!token) {
+        navigate("/login");
         return;
       }
 
-      const data = await res.json();
-      setSubjects(data.subjects || []);
+      const userRes = await fetch(`${API_BASE_URL}/api/user/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const userData = await userRes.json();
+      setUserInfo(userData);
+
+      const subjectList = ["physics", "chemistry", "mathematics", "biology"];
+
+      const finalData = await Promise.all(
+        subjectList.map(async (sub) => {
+          const syllabusRes = await fetch(
+            `${API_BASE_URL}/api/syllabus/${userData.classLevel}/${userData.board.toLowerCase()}/${sub}`,
+          );
+          const syllabus = await syllabusRes.json();
+
+          return {
+            name: syllabus.subject,
+            slug: sub,
+            totalChapters: syllabus.chapters.length,
+            completedChapters: 0,
+            color:
+              sub === "physics"
+                ? "#4F46E5"
+                : sub === "chemistry"
+                ? "#D946EF"
+                : sub === "mathematics"
+                ? "#0EA5E9"
+                : "#10B981",
+          };
+        }),
+      );
+
+      setSubjects(finalData);
+    } catch (err) {
+      console.log("Dashboard error:", err);
+    } finally {
       setLoading(false);
-    };
-
-    fetchSubjects();
-  }, [board, classLevel]);
-
-  /* ================= SUBJECT ICONS ================= */
-  const subjectIcons = {
-    physics: "⚡",
-    chemistry: "⚗️",
-    mathematics: "📐",
-    biology: "🧬",
-    english: "📘",
-  };
-
-  /* ================= PROGRESS HELPERS ================= */
-  const getCount = (slug, totalChapters) => {
-    const subjectProgress = progressData.find((s) => s.subject === slug);
-    const completed = subjectProgress?.completedChapters.length || 0;
-    return `${completed} / ${totalChapters}`;
-  };
-
-  const getProgress = (slug, totalChapters) => {
-    const subjectProgress = progressData.find((s) => s.subject === slug);
-    const completed = subjectProgress?.completedChapters.length || 0;
-    return Math.round((completed / totalChapters) * 100);
-  };
-
-  /* ================= EXAM COUNTDOWN ================= */
-  const examDates = {
-    CBSE: { 10: "2026-03-15", 12: "2026-03-10" },
-    CHSE: { 12: "2026-03-20" },
-  };
-
-  const getDaysLeft = () => {
-    const date = examDates?.[board]?.[classLevel];
-    if (!date) return null;
-    return Math.ceil((new Date(date) - new Date()) / (1000 * 60 * 60 * 24));
-  };
-
-  if (loading) {
-    return <div style={{ padding: "100px" }}>Loading dashboard...</div>;
+    }
   }
 
-  /* ================= UI (UNCHANGED) ================= */
+  if (loading) {
+    return (
+      <div className="dashboard-center">
+        <div className="loader" />
+      </div>
+    );
+  }
+
   return (
-    <div className="dashboard-wrapper">
-      <Header />
+    <div className="dashboard-container">
+      {/* HEADER */}
+      <div className="dashboard-header">
+        <button className="icon-btn" onClick={() => navigate("/home")}>
+          <ArrowLeft />
+        </button>
 
-      {/* ================= OVERVIEW ================= */}
-      <section className="dashboard-overview glass">
-        <div>
-          <h1>
-            {board} • Class {classLevel} <span>Board Exam</span>
-          </h1>
-          <p className="overview-subtext">
-            Track syllabus, monitor progress, and stay exam-ready
-          </p>
-        </div>
+        <span className="header-title">
+          {userInfo?.board} • Class {userInfo?.classLevel}
+        </span>
 
-        <div className="countdown-card">
-          {getDaysLeft() !== null ? (
-            <>
-              <strong>{getDaysLeft()}</strong>
-              <span>days left</span>
-            </>
-          ) : (
-            <>
-              <strong>—</strong>
-              <span>exam not set</span>
-            </>
-          )}
-        </div>
-      </section>
+        <button className="icon-btn" onClick={() => navigate("/profile")}>
+          <User />
+        </button>
+      </div>
 
-      {/* ================= MAIN GRID ================= */}
-      <section className="dashboard-grid">
-        {/* 📚 SYLLABUS */}
-        <div className="syllabus-card glass">
-          <h2>Syllabus Progress</h2>
+      {/* ACTION GRID */}
+      <div className="action-grid">
+        <ActionItem
+          label="Sample paper"
+          icon={<FileText />}
+          onClick={() => navigate("/sample-paper")}
+        />
+        <ActionItem
+          label="Roadmap"
+          icon={<Compass />}
+          onClick={() => navigate("/roadmap")}
+        />
+        <ActionItem
+          label="Cards"
+          icon={<Layers />}
+          onClick={() => navigate("/flashcards")}
+        />
+        <ActionItem
+          label="Tests"
+          icon={<PenTool />}
+          onClick={() => navigate("/exam")}
+        />
+      </div>
 
-          {subjects.map((subject) => (
-            <div
-              key={subject.slug}
-              className="subject clickable"
-              onClick={() =>
-                navigate(`/class/${classLevel}/${board}/${subject.slug}`)
-              }
-            >
-              <span>
-                {subjectIcons[subject.slug] || "📘"} {subject.name}
+      {/* SUBJECT CARDS */}
+      {subjects.map((item) => {
+        const progress = Math.round(
+          (item.completedChapters / item.totalChapters) * 100,
+        );
+
+        return (
+          <div
+            key={item.slug}
+            className="subject-card"
+            onClick={() => navigate(`/exam`)}
+          >
+            <div className="subject-row">
+              <div
+                className="subject-icon"
+                style={{ background: item.color + "20", color: item.color }}
+              >
+                {subjectIcons[item.slug]}
+              </div>
+
+              <div className="subject-info">
+                <h3>{item.name}</h3>
+                <p>
+                  {item.completedChapters}/{item.totalChapters} Units Completed
+                </p>
+              </div>
+
+              <span style={{ color: item.color }} className="percent">
+                {progress}%
               </span>
+            </div>
 
-              <small>{getCount(subject.slug, subject.totalChapters)}</small>
-              <CircularProgress
-                percent={getProgress(subject.slug, subject.totalChapters)}
+            <div className="progress-bg">
+              <div
+                className="progress-fill"
+                style={{
+                  width: `${progress}%`,
+                  backgroundColor: item.color,
+                }}
               />
             </div>
-          ))}
-        </div>
-
-        {/* 🚀 QUICK LEARNING (UNCHANGED UI) */}
-        <div className="streak-card glass">
-          <h2>Quick Learning</h2>
-          <p className="streak-count">Boost your preparation</p>
-
-          <div className="learning-actions">
-            <button className="action-btn pyq" onClick={() => navigate("/pyq")}>
-              📄 PYQs
-              <span>Previous Year Questions</span>
-            </button>
-
-            <button
-              className="action-btn roadmap"
-              onClick={() => navigate("/roadmap")}
-            >
-              🧭 Roadmap
-              <span>Step-by-step plan</span>
-            </button>
-
-            <button
-              className="action-btn flashcard"
-              onClick={() => navigate("/flashcards")}
-            >
-              🧠 Flashcards
-              <span>Quick revision</span>
-            </button>
-
-            <button
-              className="action-btn sample"
-              onClick={() => navigate("/sample-papers")}
-            >
-              📝 Sample Papers
-              <span>Exam practice</span>
-            </button>
-
-            <button
-              className="action-btn tests"
-              onClick={() => navigate("/tests")}
-            >
-              📝 Tests
-              <span>Exam practice</span>
-            </button>
-
-            <button
-              className="action-btn shortnotes"
-              onClick={() => navigate("/shortnotes")}
-            >
-              📝 Short Notes
-              <span>Exam practice</span>
-            </button>
           </div>
-        </div>
-      </section>
+        );
+      })}
+    </div>
+  );
+}
 
-      {/* ================= ANALYTICS ================= */}
-      <section className="glass" style={{ marginTop: "40px" }}>
-        <AnalyticsChart subjects={subjects} getProgress={getProgress} />
-      </section>
-
-      {/* ================= ACTION ================= */}
-      <section className="dashboard-action">
-        <button
-          className="take-test-btn"
-          onClick={() => navigate("/exam-dashboard")}
-        >
-          Take a Test
-        </button>
-      </section>
+/* ---------- ACTION ITEM ---------- */
+function ActionItem({ label, icon, onClick }) {
+  return (
+    <div className="action-item" onClick={onClick}>
+      <div className="action-icon">{icon}</div>
+      <span>{label}</span>
     </div>
   );
 }

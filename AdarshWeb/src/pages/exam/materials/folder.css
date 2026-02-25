@@ -1,0 +1,48 @@
+/* -------- Folder Page -------- */
+
+.folder-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  padding: 20px;
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.folder-header h2 {
+  font-size: 20px;
+  font-weight: 900;
+  color: #0f172a;
+}
+
+.folder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.folder-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.folder-card:hover {
+  background: #f1f5f9;
+}
+
+.folder-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}

@@ -1,0 +1,88 @@
+.exam-page {
+  padding: 20px;
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+.exam-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.subject-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+.subject-tab {
+  padding: 8px 20px;
+  border-radius: 20px;
+  background: #f8fafc;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.subject-tab.active {
+  background: #000;
+  color: #fff;
+}
+
+.chapter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chapter-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chapter-card:hover {
+  background: #f8fafc;
+}
+
+.chapter-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 14px;
+  font-weight: 600;
+}
+
+.chapter-title {
+  flex: 1;
+  font-weight: 500;
+  color: #334155;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #64748b;
+}

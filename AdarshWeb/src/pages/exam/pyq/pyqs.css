@@ -1,0 +1,84 @@
+.pyq-container {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.pyq-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.pyq-card {
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.q-text {
+  font-weight: 600;
+}
+
+.meta {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.answer-box {
+  margin-top: 12px;
+}
+
+.option {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 6px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: none;
+  cursor: pointer;
+}
+
+.option.selected {
+  background: #dbeafe;
+}
+
+.answer-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+
+.result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 8px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.result.correct {
+  background: #22c55e;
+}
+
+.result.wrong {
+  background: #ef4444;
+}
+
+.pyq-center {
+  text-align: center;
+  padding: 40px;
+}

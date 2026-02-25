@@ -9,20 +9,33 @@ const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // 🔐 If already logged in, skip login page
+  /* ----------------------------------------
+     AUTO REDIRECT IF ALREADY LOGGED IN
+  ---------------------------------------- */
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const onboardingDone = localStorage.getItem("onboardingCompleted");
+
     if (token) {
-      navigate("/onboarding", { replace: true });
+      if (onboardingDone === "true") {
+        navigate("/home", { replace: true });
+      } else {
+        navigate("/onboarding", { replace: true });
+      }
     }
   }, [navigate]);
 
+  /* ----------------------------------------
+     LOGIN SUBMIT
+  ---------------------------------------- */
   const submit = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (!email || !password) {
-      alert("Please enter email and password");
+      setError("Please enter email and password");
       return;
     }
 
@@ -31,31 +44,52 @@ const LoginPage = () => {
 
       const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Login failed");
+        setError(data.message || "Invalid credentials");
         return;
       }
 
-      if (!data.token) {
-        throw new Error("Token missing in response");
+      /* ----------------------------------------
+         EXPECTED BACKEND RESPONSE
+      ---------------------------------------- */
+      const { token, user } = data;
+
+      if (!token || !user) {
+        throw new Error("Invalid login response");
       }
 
-      // ✅ Save token
-      localStorage.setItem("token", data.token);
+      /* ----------------------------------------
+         SAVE AUTH METADATA
+      ---------------------------------------- */
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", user._id);
+      localStorage.setItem("email", user.email);
+      localStorage.setItem(
+        "onboardingCompleted",
+        String(user.onboardingCompleted)
+      );
 
-      // ✅ Redirect to onboarding
-      navigate("/onboarding", { replace: true });
+      if (user.board) localStorage.setItem("board", user.board);
+      if (user.classLevel)
+        localStorage.setItem("classLevel", user.classLevel);
+
+      /* ----------------------------------------
+         REDIRECT BASED ON ONBOARDING
+      ---------------------------------------- */
+      if (user.onboardingCompleted) {
+        navigate("/home", { replace: true });
+      } else {
+        navigate("/onboarding", { replace: true });
+      }
     } catch (err) {
       console.error("Login error:", err);
-      alert("Network error. Please try again.");
+      setError("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -80,10 +114,7 @@ const LoginPage = () => {
             </svg>
           </div>
           <h3>Sign in with email</h3>
-          <p>
-            Make a new doc to bring your words, data, and teams together. For
-            free.
-          </p>
+          <p>Access your learning dashboard securely.</p>
         </div>
 
         <form className="auth-form" onSubmit={submit}>
@@ -93,7 +124,7 @@ const LoginPage = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
+              autoComplete="email"
             />
           </div>
 
@@ -103,13 +134,11 @@ const LoginPage = () => {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
+              autoComplete="current-password"
             />
           </div>
 
-          <div className="forgot-password">
-            <span>Forgot password?</span>
-          </div>
+          {error && <p className="auth-error">{error}</p>}
 
           <button
             type="submit"
