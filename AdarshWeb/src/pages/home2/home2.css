@@ -1,0 +1,195 @@
+/* ================= ROOT ================= */
+.home-container {
+  min-height: 100vh;
+  background-color: #ffffff;
+  padding: 24px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+/* ================= CENTER LOADER ================= */
+.home-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4f46e5;
+}
+
+/* ================= TOP BAR ================= */
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.greeting {
+  font-size: 14px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.username {
+  font-size: 26px;
+  font-weight: 600;
+  color: #000;
+}
+
+.profile-circle {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background-color: #f1f5f9;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.profile-circle:hover {
+  background-color: #e5e7eb;
+}
+
+/* ================= HERO ================= */
+.hero-card {
+  background-color: #000;
+  border-radius: 28px;
+  padding: 28px;
+  margin-bottom: 32px;
+}
+
+.hero-card h3 {
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.hero-card p {
+  color: #94a3b8;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.hero-btn {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.hero-btn:hover {
+  background-color: #f1f5f9;
+}
+
+/* ================= SECTION ================= */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #000;
+}
+
+/* ================= GRID ================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+/* ================= MENU CARD ================= */
+.menu-card {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 22px;
+  padding: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.menu-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.icon-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background-color: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.menu-card h4 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.menu-card p {
+  font-size: 12px;
+  color: #64748b;
+}
+
+/* ================= FULL WIDTH CARD ================= */
+.full-card {
+  background-color: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 24px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.full-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+}
+
+.full-card-text {
+  flex: 1;
+}
+
+.full-card-text h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+}
+
+.full-card-text p {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .username {
+    font-size: 22px;
+  }
+
+  .hero-card {
+    padding: 22px;
+  }
+}

@@ -1,0 +1,151 @@
+/* ================= ROOT ================= */
+.board-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ededed;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+
+  background-size: 40px 40px;
+
+}
+
+.board-glass {
+  width: 90%;
+  max-width: 1000px;
+  padding: 60px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+}
+
+.board-glass h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-bottom: 40px;
+}
+
+/* ================= SCROLL ================= */
+.scroll-wrapper {
+  position: relative;
+}
+
+.board-options {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px;
+  scroll-behavior: smooth;
+}
+
+.board-options::-webkit-scrollbar {
+  display: none;
+}
+
+/* ================= BOARD CARD ================= */
+.board-card {
+  min-width: 220px;
+  padding: 30px;
+  border-radius: 20px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.35s ease;
+  position: relative;
+}
+
+/* Hover glow */
+.board-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 20px 45px rgba(241, 196, 99, 0.25);
+}
+
+/* ================= SELECTED GLOW ================= */
+.board-card.selected {
+  border: 2px solid #fb8500;
+  box-shadow:
+    0 0 0 4px rgba(255, 183, 3, 0.25),
+    0 25px 60px rgba(247, 127, 0, 0.55);
+  animation: glowPulse 2s infinite ease-in-out;
+}
+
+/* 🔥 Premium Amber Glow Pulse */
+@keyframes glowPulse {
+  0% {
+    box-shadow:
+      0 0 0 4px rgba(255, 183, 3, 0.25),
+      0 20px 45px rgba(247, 127, 0, 0.45);
+  }
+  50% {
+    box-shadow:
+      0 0 0 9px rgba(251, 133, 0, 0.35),
+      0 30px 75px rgba(247, 127, 0, 0.75);
+  }
+  100% {
+    box-shadow:
+      0 0 0 4px rgba(255, 183, 3, 0.25),
+      0 20px 45px rgba(247, 127, 0, 0.45);
+  }
+}
+
+
+.board-card h3 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.board-card p {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ================= CLASS GRID ================= */
+.class-grid {
+  justify-content: center;
+}
+
+/* ================= ARROWS ================= */
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
+}
+
+.scroll-btn:hover {
+  transform: translateY(-50%) scale(1.1);
+}
+
+.scroll-btn.left {
+  left: -20px;
+}
+
+.scroll-btn.right {
+  right: -20px;
+}
+
+@media (max-width: 768px) {
+  .scroll-btn {
+    display: none;
+  }
+}
+/* ================= RESPONSIVE ================= */

@@ -1,0 +1,285 @@
+.dashboard-wrapper {
+  min-height: 100vh;
+  padding: 100px 40px 40px;
+  background-color: #f8f9fb;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* GLASS UTILITY */
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(18px);
+  border-radius: 22px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* OVERVIEW */
+.dashboard-overview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px;
+  margin-bottom: 40px;
+}
+
+.dashboard-overview h1 {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.dashboard-overview h1 span {
+  font-size: 14px;
+  margin-left: 8px;
+  color: #6b7280;
+}
+
+.overview-subtext {
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+/* COUNTDOWN */
+.countdown-card {
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  padding: 18px 22px;
+  border-radius: 18px;
+  text-align: center;
+  color: #111;
+  box-shadow: 0 12px 25px rgba(255, 183, 3, 0.45);
+}
+
+.countdown-card strong {
+  font-size: 30px;
+  display: block;
+  font-weight: 700;
+}
+
+.countdown-card span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* GRID */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 36px;
+}
+
+/* SYLLABUS */
+.syllabus-card {
+  padding: 32px;
+}
+
+.syllabus-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+/* SUBJECT ROW */
+.subject {
+  display: grid;
+  grid-template-columns: 140px 1fr 70px;
+  align-items: center;
+  gap: 16px;
+
+  padding: 14px 16px;
+  border-radius: 14px;
+
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  margin-bottom: 14px;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.subject span {
+  font-weight: 500;
+}
+
+/* CLICKABLE EFFECT */
+.subject.clickable {
+  cursor: pointer;
+}
+
+.subject.clickable:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.12),
+    inset 0 0 0 1px rgba(255, 183, 3, 0.25);
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+  height: 10px;
+  background: #eef2f7;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-bar div {
+  height: 100%;
+  background: linear-gradient(90deg, #ffb703, #fb8500);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(255, 183, 3, 0.45);
+  /* 🔥 animation */
+  transition: width 1s ease-in-out;
+
+}
+
+/* COUNT */
+.subject small {
+  font-size: 13px;
+  color: #374151;
+  text-align: right;
+}
+
+/* STREAK */
+.streak-card {
+  padding: 32px;
+  text-align: center;
+}
+
+.streak-card h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.streak-count {
+  font-size: 18px;
+  margin-bottom: 24px;
+  color: #111;
+}
+
+/* ACTION */
+.dashboard-action {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.take-test-btn {
+  padding: 16px 52px;
+  border-radius: 18px;
+  border: none;
+
+  background: #111;
+  color: #fff;
+
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: all 0.25s ease;
+}
+
+.take-test-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 22px 45px rgba(0, 0, 0, 0.28);
+}
+
+
+
+.celebration-banner {
+  position: fixed;
+  top: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 32px;
+  border-radius: 999px;
+
+  background: linear-gradient(135deg, #ffb703, #fb8500);
+  color: #111;
+  font-weight: 600;
+
+  box-shadow: 0 20px 40px rgba(255, 183, 3, 0.45);
+  animation: pop 0.4s ease;
+  z-index: 999;
+}
+
+@keyframes pop {
+  from {
+    transform: translateX(-50%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== QUICK LEARNING ACTIONS ===== */
+
+.learning-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.action-btn {
+  height: 88px;
+  border-radius: 18px;
+  border: none;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.action-btn span {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+/* Hover animation */
+.action-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== INDIVIDUAL GRADIENTS ===== */
+
+.action-btn.pyq {
+  background: linear-gradient(135deg, #ffd166, #fca311);
+}
+
+.action-btn.roadmap {
+  background: linear-gradient(135deg, #90dbf4, #48cae4);
+}
+
+.action-btn.flashcard {
+  background: linear-gradient(135deg, #cdb4db, #a855f7);
+}
+
+.action-btn.sample {
+  background: linear-gradient(135deg, #b7e4c7, #52b788);
+}
+.action-btn .icon {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  opacity: 0.15;
+}
