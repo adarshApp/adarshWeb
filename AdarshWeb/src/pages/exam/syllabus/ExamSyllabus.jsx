@@ -14,6 +14,8 @@ const SUBJECT_ROUTE_MAP = {
   Mathematics: "maths",
   chemistry: "chemistry",
   Chemistry: "chemistry",
+  Biology: "biology",
+  biology: "biology",
 };
 
 export default function ExamSyllabus() {

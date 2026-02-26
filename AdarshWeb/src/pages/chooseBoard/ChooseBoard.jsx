@@ -1,49 +1,57 @@
-import { useNavigate } from "react-router-dom";
-import { useState, useRef } from "react";
-import "./chooseBoard.css";
+import React, { useState } from "react";
+import "./ChooseBoard.css";
+
 import { API_BASE_URL } from "../../config/api";
 
 export default function ChooseBoard() {
-  const navigate = useNavigate();
-  const scrollRef = useRef(null);
-
   const [selectedBoard, setSelectedBoard] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const boards = [
-    "CBSE","ICSE","CHSE","State","CGBSE","COHSEM","DHSE","DPUE",
-    "GBSHE","GSEB","HBSE","HPBOSE","HSE","JAC","MBOSE","MBSE",
-    "MPBSE","MSBSHSE","NBSE","PSEB","RBSE","SBSE","TBSE",
-    "TSBIE","UBSE","UPMSP","WBCHSE",
-  ];
-
+  const boards = ["CBSE", "CHSE"];
   const classes = ["10", "11", "12"];
 
-  const scroll = (dir) => {
-    if (!scrollRef.current) return;
-    scrollRef.current.scrollBy({
-      left: dir === "left" ? -260 : 260,
-      behavior: "smooth",
-    });
-  };
-
-  /* ================= SAVE ONBOARDING ================= */
-  const handleClassSelect = async (classLevel) => {
-    if (loading) return;
-
+  async function handleClassSelect(classLevel) {
     if (!selectedBoard) {
       alert("Please select a board first");
       return;
     }
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login", { replace: true });
-      return;
-    }
-
     try {
       setLoading(true);
+
+      const token = localStorage.getItem("token");
+      const guestId = localStorage.getItem("guestId");
+
+      /* ========= GUEST FLOW ========= */
+      if (guestId) {
+        const res = await fetch(`${API_BASE_URL}/api/guest/onboarding`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            guestId,
+            board: selectedBoard,
+            classLevel,
+          }),
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          alert(text || "Guest onboarding failed");
+          return;
+        }
+
+        localStorage.setItem("board", selectedBoard);
+        localStorage.setItem("classLevel", classLevel);
+
+        window.location.href = "/";
+        return;
+      }
+
+      /* ========= LOGGED USER FLOW ========= */
+      if (!token) {
+        window.location.href = "/login";
+        return;
+      }
 
       const res = await fetch(`${API_BASE_URL}/api/user/onboarding`, {
         method: "POST",
@@ -57,103 +65,64 @@ export default function ChooseBoard() {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Onboarding failed");
+      if (!res.ok) {
+        const text = await res.text();
+        alert(text || "User onboarding failed");
+        return;
+      }
 
-      /* ✅ SAVE STATE LOCALLY */
       localStorage.setItem("board", selectedBoard);
       localStorage.setItem("classLevel", classLevel);
-      localStorage.setItem("onboardingCompleted", "true");
 
-      /* ✅ GO TO HOME */
-      navigate("/home", { replace: true });
-
+      window.location.href = "/";
     } catch (err) {
-      alert(err.message || "Something went wrong");
+      alert("Network Error. Please check your connection.");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="board-wrapper">
-      <div className="board-glass">
-
-        {/* ================= BOARD SELECTION ================= */}
+    <div className="choose-container">
+      <div className="glass-card">
+        {/* ===== BOARD SELECTION ===== */}
         {!selectedBoard && (
           <>
-            <h1>Choose Your Board</h1>
-            <p className="subtitle">
-              Select your education board to personalize your study experience.
-            </p>
+            <h1 className="title">Choose Your Board</h1>
+            <p className="subtitle">Select your education board</p>
 
-            <div className="scroll-wrapper">
-              <button className="scroll-btn left" onClick={() => scroll("left")}>
-                ‹
-              </button>
-
-              <div className="board-options" ref={scrollRef}>
-                {boards.map((board) => (
-                  <div
-                    key={board}
-                    className={`board-card ${
-                      selectedBoard === board ? "selected" : ""
-                    }`}
-                    onClick={() => setSelectedBoard(board)}
-                  >
-                    <h3>{board}</h3>
-                    <p>State-specific curriculum</p>
-                  </div>
-                ))}
-              </div>
-
-              <button className="scroll-btn right" onClick={() => scroll("right")}>
-                ›
-              </button>
+            <div className="board-scroll">
+              {boards.map((board) => (
+                <button
+                  key={board}
+                  className="board-card"
+                  onClick={() => setSelectedBoard(board)}
+                >
+                  {board}
+                </button>
+              ))}
             </div>
           </>
         )}
 
-        {/* ================= CLASS SELECTION ================= */}
+        {/* ===== CLASS SELECTION ===== */}
         {selectedBoard && (
           <>
-            <button
-              className="back-btn"
-              onClick={() => setSelectedBoard(null)}
-              disabled={loading}
-            >
-              ← Change Board
-            </button>
+            <h1 className="title">Select Class</h1>
+            <p className="subtitle">Board: {selectedBoard}</p>
 
-            <h1>Select Class</h1>
-            <p className="subtitle">
-              You selected <b>{selectedBoard}</b>. Now choose your class.
-            </p>
+            {classes.map((cls) => (
+              <button
+                key={cls}
+                className="class-card"
+                onClick={() => handleClassSelect(cls)}
+                disabled={loading}
+              >
+                Class {cls}
+              </button>
+            ))}
 
-            <div className="board-options class-grid">
-              {classes.map((cls) => (
-                <div
-                  key={cls}
-                  className={`board-card selected ${
-                    loading ? "disabled" : ""
-                  }`}
-                  onClick={() => !loading && handleClassSelect(cls)}
-                >
-                  <h3>Class {cls}</h3>
-                  <p>
-                    {cls === "10"
-                      ? "Secondary Level"
-                      : cls === "11"
-                      ? "Higher Secondary"
-                      : "Board Examination Year"}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {loading && (
-              <p className="loading-text">Saving your preferences…</p>
-            )}
+            {loading && <div className="loader" />}
           </>
         )}
       </div>

@@ -1,48 +1,282 @@
-/* -------- Folder Page -------- */
+/* ===============================
+   APPLE GLASS + GRID BACKGROUND
+   FINAL MERGED DESIGN SYSTEM
+================================ */
 
-.folder-page {
-  min-height: 100vh;
-  background: #f8fafc;
-  padding: 20px;
+:root {
+  /* Apple-style colors */
+  --ios-blue: #007aff;
+  --ios-red: #ff3b30;
+  --ios-gray: #8e8e93;
+  --ios-text: #1c1c1e;
+
+  /* Glass physics */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.75);
+  --glass-blur: blur(22px) saturate(180%);
+
+  /* Depth */
+  --card-shadow:
+    0 18px 36px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
+
+  /* Motion */
+  --transition-ios: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===============================
+   PAGE BACKGROUND (GRID + GLOW)
+================================ */
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background:
+    /* soft glow */
+    radial-gradient(
+      at 0% 0%,
+      rgba(0, 122, 255, 0.06),
+      transparent 45%
+    ),
+    radial-gradient(
+      at 100% 100%,
+      rgba(0, 122, 255, 0.06),
+      transparent 45%
+    ),
+
+    /* subtle grid */
+    linear-gradient(
+      rgba(0, 0, 0, 0.035) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.035) 1px,
+      transparent 1px
+    ),
+
+    #f8fafc;
+
+  background-size:
+    auto,
+    auto,
+    40px 40px,
+    40px 40px;
+
+  background-attachment: fixed;
+}
+
+/* ===============================
+   BASE LAYOUT
+================================ */
+
+.folder-layout {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: var(--ios-text);
+}
+
+/* ===============================
+   STICKY GLASS HEADER
+================================ */
 
 .folder-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+
+  padding: 16px 20px 20px;
+  border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+}
+
+.header-top {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.folder-header h2 {
-  font-size: 20px;
-  font-weight: 900;
-  color: #0f172a;
+/* ===============================
+   HEADER BUTTONS
+================================ */
+
+.back-btn,
+.menu-btn {
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: var(--transition-ios);
 }
 
-.folder-list {
+.back-btn:hover,
+.menu-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.back-btn:active,
+.menu-btn:active {
+  transform: scale(0.9);
+}
+
+/* ===============================
+   HEADER TEXT
+================================ */
+
+.header-content .breadcrumb {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ios-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+
+.folder-title {
+  font-size: 34px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -1.2px;
+}
+
+/* ===============================
+   GRID SYSTEM
+================================ */
+
+.folder-container {
+  padding: 26px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.grid-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+/* ===============================
+   GLASS CONTENT CARDS
+================================ */
+
+.content-card {
+  position: relative;
+
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+
+  border-radius: 28px;
+  padding: 26px 22px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
+
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--card-shadow);
+
+  cursor: pointer;
+  transition: var(--transition-ios);
 }
 
-.folder-card {
+/* Subtle inner highlight */
+.content-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+.content-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 26px 52px rgba(0, 0, 0, 0.12);
+}
+
+.content-card:active {
+  transform: scale(0.96);
+}
+
+/* ===============================
+   ICON STYLING
+================================ */
+
+.icon-wrapper {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  cursor: pointer;
-  transition: background 0.15s ease;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.06);
 }
 
-.folder-card:hover {
-  background: #f1f5f9;
+.dir-card .folder-icon {
+  color: var(--ios-blue);
 }
 
-.folder-text {
+.pdf-card .pdf-icon {
+  color: var(--ios-red);
+}
+
+/* ===============================
+   TEXT
+================================ */
+
+.item-name {
   font-size: 16px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--ios-text);
+  line-height: 1.35;
+
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.item-subtext {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ios-gray);
+}
+
+/* ===============================
+   ACCESSIBILITY
+================================ */
+
+.content-card:focus-visible,
+.back-btn:focus-visible,
+.menu-btn:focus-visible {
+  outline: 3px solid rgba(0, 122, 255, 0.35);
+  outline-offset: 4px;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+
+@media (min-width: 768px) {
+  .grid-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 26px;
+  }
 }

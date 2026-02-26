@@ -1,195 +1,268 @@
-/* ================= ROOT ================= */
-.home-container {
+/* home2.css - Final Glassy Version */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: rgba(31, 38, 135, 0.08);
+  --accent-primary: #4F46E5; /* Indigo accent for study focus */
+  --text-main: #1d1d1f;
+  --text-muted: #666e7a;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.dashboard-wrapper {
+  /* Subtle gradient background to make the white glass pop */
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-  background-color: #ffffff;
   padding: 24px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* ================= CENTER LOADER ================= */
-.home-center {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* 1. Background Blurs (The "Blobs") - creates depth behind the cards */
+.bg-voxel {
+  position: absolute;
+  filter: blur(80px);
+  z-index: 0;
+  opacity: 0.6;
+  pointer-events: none;
 }
+.v1 { width: 400px; height: 400px; background: #d4e5ff; top: -50px; right: -50px; }
+.v2 { width: 300px; height: 300px; background: #ffe4e1; bottom: 100px; left: -50px; }
 
-.loader {
-  font-size: 16px;
-  font-weight: 600;
-  color: #4f46e5;
-}
-
-/* ================= TOP BAR ================= */
-.top-bar {
+/* 2. Header Section */
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
+  position: relative;
+  z-index: 10;
 }
 
-.greeting {
-  font-size: 14px;
-  color: #64748b;
-  margin-bottom: 4px;
-}
-
-.username {
-  font-size: 26px;
+.greeting-text {
+  font-size: 0.95rem;
   font-weight: 600;
-  color: #000;
+  color: var(--text-muted);
 }
 
-.profile-circle {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  background-color: #f1f5f9;
-  border: none;
+.display-name {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+}
+
+.avatar-btn {
+  width: 50px;
+  height: 50px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: var(--accent-primary);
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.profile-circle:hover {
-  background-color: #e5e7eb;
-}
-
-/* ================= HERO ================= */
-.hero-card {
-  background-color: #000;
-  border-radius: 28px;
-  padding: 28px;
-  margin-bottom: 32px;
-}
-
-.hero-card h3 {
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.hero-card p {
-  color: #94a3b8;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.hero-btn {
-  background-color: #ffffff;
-  border: none;
-  border-radius: 16px;
-  padding: 12px 18px;
-  font-size: 14px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-
-.hero-btn:hover {
-  background-color: #f1f5f9;
-}
-
-/* ================= SECTION ================= */
-.section-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #000;
-}
-
-/* ================= GRID ================= */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 14px;
-  margin-bottom: 28px;
-}
-
-/* ================= MENU CARD ================= */
-.menu-card {
-  background-color: #ffffff;
-  border: 1px solid #f1f5f9;
-  border-radius: 22px;
-  padding: 16px;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.menu-card:hover {
+.avatar-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.15);
 }
 
-.icon-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background-color: #f8fafc;
+/* 3. Hero Banner (Main Study Room) */
+.hero-banner {
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 32px;
+  padding: 30px;
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
+  box-shadow: 0 15px 45px 0 var(--glass-shadow);
+  margin-bottom: 40px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.2, 1, 0.3, 1);
+  position: relative;
+  z-index: 2;
+}
+
+.hero-banner:hover {
+  transform: scale(1.01);
+}
+
+.badge {
+  background: rgba(79, 70, 229, 0.12);
+  color: var(--accent-primary);
+  padding: 5px 14px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border-radius: 10px;
   margin-bottom: 12px;
+  display: inline-block;
+  letter-spacing: 0.5px;
 }
 
-.menu-card h4 {
-  font-size: 15px;
-  font-weight: 600;
-  color: #000;
-  margin-bottom: 4px;
+.hero-banner h3 { 
+  font-size: 1.7rem; 
+  font-weight: 800; 
+  color: var(--text-main);
 }
 
-.menu-card p {
-  font-size: 12px;
-  color: #64748b;
+.hero-banner p {
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
-/* ================= FULL WIDTH CARD ================= */
-.full-card {
-  background-color: #ffffff;
-  border: 1px solid #f1f5f9;
-  border-radius: 24px;
-  padding: 20px;
+/* 4. Feature Grid Cards */
+.section-label {
+  font-size: 1.25rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: var(--text-main);
+  padding-left: 5px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 35px;
+  position: relative;
+  z-index: 2;
+}
+
+.action-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  padding: 24px;
+  border-radius: 26px;
+  box-shadow: 0 8px 32px 0 var(--glass-shadow);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+}
+
+.action-card:hover {
+  transform: translateY(-8px);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 20px 50px 0 rgba(0, 0, 0, 0.1);
+}
+
+.card-icon { 
+  margin-bottom: 20px; 
+}
+
+.action-card h4 { 
+  font-size: 1.1rem; 
+  font-weight: 700; 
+  margin-bottom: 6px;
+  color: var(--text-main);
+}
+
+.action-card p { 
+  font-size: 0.85rem; 
+  color: #5a5f66; 
+  font-weight: 500; 
+}
+
+/* 5. PYQ Chapter-wise Full Card */
+.pyq-full-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--glass-border);
+  padding: 26px;
+  border-radius: 30px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 22px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.06);
   cursor: pointer;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
 }
 
-.full-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
+.pyq-full-card:hover {
+  background: rgba(255, 255, 255, 0.55);
+  transform: translateY(-3px);
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.1);
 }
 
-.full-card-text {
-  flex: 1;
+.pyq-icon {
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 20px;
+  color: #7C3AED;
+  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.full-card-text h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #000;
+.pyq-text h4 { 
+  font-weight: 800; 
+  font-size: 1.2rem; 
+  color: var(--text-main); 
 }
 
-.full-card-text p {
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 2px;
+.pyq-text p { 
+  font-weight: 600; 
+  font-size: 0.95rem; 
+  color: var(--text-muted); 
 }
 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
-  .username {
-    font-size: 22px;
-  }
+.pyq-arrow { 
+  margin-left: auto; 
+  color: #7C3AED;
+  opacity: 0.8;
+}
 
-  .hero-card {
-    padding: 22px;
-  }
+/* 6. Professional Loader */
+.home-center {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f7fa;
+}
+
+.custom-loader {
+  width: 52px;
+  height: 52px;
+  border: 4px solid rgba(79, 70, 229, 0.15);
+  border-bottom-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: rotation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+@keyframes rotation {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 7. Mobile Optimization */
+@media (max-width: 600px) {
+  .dashboard-wrapper { padding: 18px; }
+  .display-name { font-size: 1.6rem; }
+  .feature-grid { gap: 15px; }
+  .action-card { padding: 18px; }
+  .hero-banner { padding: 22px; }
 }

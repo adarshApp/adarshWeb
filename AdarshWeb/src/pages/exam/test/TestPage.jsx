@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronLeft, Clock, Trophy } from "lucide-react";
+import { ChevronLeft, Clock, Trophy, AlertCircle } from "lucide-react";
 import { API_BASE_URL } from "../../../config/api";
 import "./test.css";
 
@@ -16,30 +16,41 @@ export default function TestPage() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  /* ---------- FORMAT TIMER (HH:MM:SS) ---------- */
+  const formatTime = (seconds) => {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    const parts = [];
+    if (hrs > 0) parts.push(hrs.toString().padStart(2, "0"));
+    parts.push(mins.toString().padStart(2, "0"));
+    parts.push(secs.toString().padStart(2, "0"));
+
+    return parts.join(":");
+  };
+
   /* ---------- LOAD TEST ---------- */
   useEffect(() => {
     if (!examName || !subject || !testId) return;
+    const loadTest = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/tests/${examName}/${subject}/${testId}`);
+        if (!res.ok) throw new Error();
+        const json = await res.json();
+        setTest(json);
+        setTimeLeft((json.duration || 0) * 60);
+      } catch {
+        alert("Failed to load test");
+        navigate(-1);
+      } finally {
+        setLoading(false);
+      }
+    };
     loadTest();
-  }, [examName, subject, testId]);
+  }, [examName, subject, testId, navigate]);
 
-  async function loadTest() {
-    try {
-      const res = await fetch(
-        `${API_BASE_URL}/api/tests/${examName}/${subject}/${testId}`
-      );
-      if (!res.ok) throw new Error();
-      const json = await res.json();
-      setTest(json);
-      setTimeLeft((json.duration || 0) * 60);
-    } catch {
-      alert("Failed to load test");
-      navigate(-1);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  /* ---------- TIMER ---------- */
+  /* ---------- TIMER LOGIC ---------- */
   useEffect(() => {
     if (!test || submitted) return;
 
@@ -57,8 +68,8 @@ export default function TestPage() {
     return () => clearInterval(timer);
   }, [test, submitted]);
 
-  /* ---------- SAVE RESULT ---------- */
-  async function saveResult(finalScore) {
+  /* ---------- SAVE TO DATABASE ---------- */
+  const saveResult = async (finalScore) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -76,19 +87,17 @@ export default function TestPage() {
           testType: "chapter-test",
           score: finalScore,
           totalMarks: test.questions.length,
-          accuracy: Math.round(
-            (finalScore / test.questions.length) * 100
-          ),
-          timeTaken: test.duration * 60 - timeLeft,
+          accuracy: Math.round((finalScore / test.questions.length) * 100),
+          timeTaken: (test.duration * 60) - timeLeft,
         }),
       });
-    } catch {
-      console.log("Result save failed");
+    } catch (err) {
+      console.error("Result save failed", err);
     }
-  }
+  };
 
   /* ---------- SUBMIT TEST ---------- */
-  function submitTest() {
+  const submitTest = () => {
     let sc = 0;
     test.questions.forEach((q, i) => {
       if (answers[i] === q.answer) sc++;
@@ -97,116 +106,116 @@ export default function TestPage() {
     setScore(sc);
     setSubmitted(true);
     saveResult(sc);
-  }
+  };
 
-  /* ---------- LOADING ---------- */
   if (loading) {
     return (
-      <div className="center">
-        <p>Setting up your exam...</p>
+      <div className="loader-screen">
+        <div className="spinner"></div>
+        <p>Preparing your workspace...</p>
       </div>
     );
   }
 
-  /* ---------- RESULT ---------- */
   if (submitted) {
-    const percent = Math.round(
-      (score / test.questions.length) * 100
-    );
-
+    const percent = Math.round((score / test.questions.length) * 100);
     return (
-      <div className="center padded">
-        <div className="result-icon">
-          <Trophy size={50} color="#4F46E5" />
+      <div className="result-container">
+        <div className="result-card">
+          <div className="trophy-wrapper">
+            <Trophy size={60} className="trophy-icon" />
+          </div>
+          <h2>{percent >= 80 ? "Outstanding!" : "Good Effort!"}</h2>
+          <div className="score-badge">
+            <span className="score-text">{score} / {test.questions.length}</span>
+            <span className="percent-text">{percent}% Score</span>
+          </div>
+          <p className="motivational-text">
+            {percent >= 80 ? "You've mastered this chapter." : "A bit more practice and you'll be there!"}
+          </p>
+          <button className="finish-btn" onClick={() => navigate(-1)}>
+            Back to Dashboard
+          </button>
         </div>
-
-        <h2>{percent >= 80 ? "Excellent Work!" : "Keep Practicing!"}</h2>
-        <p className="sub-text">
-          You scored {score}/{test.questions.length}
-        </p>
-
-        <button className="done-btn" onClick={() => navigate(-1)}>
-          Finish Review
-        </button>
       </div>
     );
   }
 
-  /* ---------- QUESTION VIEW ---------- */
-  const q = test.questions[current];
-  const progress = ((current + 1) / test.questions.length) * 100;
-  const min = Math.floor(timeLeft / 60);
-  const sec = timeLeft % 60;
+  const currentQuestion = test.questions[current];
+  const progressPercent = ((current + 1) / test.questions.length) * 100;
+  const isUrgent = timeLeft < 300; // Less than 5 mins
 
   return (
-    <div className="test-container">
-      {/* HEADER */}
-      <div className="header">
-        <button className="icon-btn" onClick={() => navigate(-1)}>
-          <ChevronLeft size={22} />
-        </button>
-
-        <div className="timer">
-          <Clock size={16} />
-          <span>
-            {min}:{sec.toString().padStart(2, "0")}
-          </span>
+    <div className="test-layout">
+      {/* GLASSMORPHISM HEADER */}
+      <header className="test-header">
+        <div className="header-left">
+          <button className="back-circle" onClick={() => navigate(-1)}>
+            <ChevronLeft size={20} />
+          </button>
+          <div className="test-meta">
+            <span className="exam-label">{examName}</span>
+            <h1 className="subject-label">{subject}</h1>
+          </div>
         </div>
 
-        <button className="exit-btn" onClick={submitTest}>
-          End Test
-        </button>
-      </div>
+        <div className={`timer-box ${isUrgent ? "urgent" : ""}`}>
+          <Clock size={16} />
+          <span className="time-string">{formatTime(timeLeft)}</span>
+        </div>
 
-      {/* PROGRESS */}
+        <button className="end-session-btn" onClick={submitTest}>
+          Finish
+        </button>
+      </header>
+
+      {/* SLEEK PROGRESS BAR */}
       <div className="progress-track">
-        <div className="progress-bar" style={{ width: `${progress}%` }} />
+        <div className="progress-fill" style={{ width: `${progressPercent}%` }}></div>
       </div>
 
-      {/* CONTENT */}
-      <div className="content">
-        <p className="q-index">
-          QUESTION {current + 1} OF {test.questions.length}
-        </p>
-        <h3>{q.question}</h3>
+      <main className="question-area">
+        <div className="question-card">
+          <div className="q-header">
+            <span className="q-count">Question {current + 1} of {test.questions.length}</span>
+          </div>
+          
+          <h2 className="question-text">{currentQuestion.question}</h2>
 
-        {q.options?.map((opt, i) => (
-          <button
-            key={i}
-            className={`option ${
-              answers[current] === opt ? "selected" : ""
-            }`}
-            onClick={() =>
-              setAnswers((p) => ({ ...p, [current]: opt }))
-            }
+          <div className="options-grid">
+            {currentQuestion.options?.map((opt, i) => (
+              <button
+                key={i}
+                className={`option-tile ${answers[current] === opt ? "active" : ""}`}
+                onClick={() => setAnswers((prev) => ({ ...prev, [current]: opt }))}
+              >
+                <div className="option-indicator">{String.fromCharCode(65 + i)}</div>
+                <span className="option-content">{opt}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      {/* NAVIGATION FOOTER */}
+      <footer className="test-footer">
+        <div className="footer-inner">
+          <button 
+            className="nav-btn secondary" 
+            disabled={current === 0} 
+            onClick={() => setCurrent((p) => p - 1)}
           >
-            {opt}
+            Previous
           </button>
-        ))}
-      </div>
 
-      {/* FOOTER */}
-      <div className="footer">
-        <button
-          disabled={current === 0}
-          onClick={() => setCurrent((p) => p - 1)}
-        >
-          Previous
-        </button>
-
-        <button
-          className="primary"
-          onClick={() =>
-            current === test.questions.length - 1
-              ? submitTest()
-              : setCurrent((p) => p + 1)
-          }
-        >
-          {current === test.questions.length - 1
-            ? "Submit Exam"
-            : "Save & Next"}
-        </button>
-      </div>
+          <button 
+            className="nav-btn primary" 
+            onClick={() => current === test.questions.length - 1 ? submitTest() : setCurrent((p) => p + 1)}
+          >
+            {current === test.questions.length - 1 ? "Submit Exam" : "Save & Next"}
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }

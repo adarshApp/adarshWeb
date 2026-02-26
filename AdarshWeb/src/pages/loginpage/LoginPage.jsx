@@ -1,170 +1,148 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import "./loginPage.css";
-import { API_BASE_URL } from "../../config/api";
 
-const LoginPage = () => {
-  const navigate = useNavigate();
+const API_BASE_URL = "https://api.adarsh.store";
 
+export default function Auth() {
+  const [mode, setMode] = useState("login"); // login | register
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  /* ----------------------------------------
-     AUTO REDIRECT IF ALREADY LOGGED IN
-  ---------------------------------------- */
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const onboardingDone = localStorage.getItem("onboardingCompleted");
+  const isLogin = mode === "login";
 
-    if (token) {
-      if (onboardingDone === "true") {
-        navigate("/home", { replace: true });
-      } else {
-        navigate("/onboarding", { replace: true });
-      }
-    }
-  }, [navigate]);
-
-  /* ----------------------------------------
-     LOGIN SUBMIT
-  ---------------------------------------- */
-  const submit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (!email || !password) {
-      setError("Please enter email and password");
+  const submit = async () => {
+    if (!email || !password || (!isLogin && !name)) {
+      alert("Please fill all fields");
       return;
     }
 
     try {
       setLoading(true);
 
-      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(
+          isLogin
+            ? { email, password }
+            : { name, email, password }
+        ),
       });
 
-      const data = await res.json();
+      // Handle non-JSON errors (CORS / proxy issues)
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Invalid server response");
+      }
 
       if (!res.ok) {
-        setError(data.message || "Invalid credentials");
+        alert(data.message || "Authentication failed");
         return;
       }
 
-      /* ----------------------------------------
-         EXPECTED BACKEND RESPONSE
-      ---------------------------------------- */
-      const { token, user } = data;
-
-      if (!token || !user) {
-        throw new Error("Invalid login response");
-      }
-
-      /* ----------------------------------------
-         SAVE AUTH METADATA
-      ---------------------------------------- */
-      localStorage.setItem("token", token);
-      localStorage.setItem("userId", user._id);
-      localStorage.setItem("email", user.email);
-      localStorage.setItem(
-        "onboardingCompleted",
-        String(user.onboardingCompleted)
-      );
-
-      if (user.board) localStorage.setItem("board", user.board);
-      if (user.classLevel)
-        localStorage.setItem("classLevel", user.classLevel);
-
-      /* ----------------------------------------
-         REDIRECT BASED ON ONBOARDING
-      ---------------------------------------- */
-      if (user.onboardingCompleted) {
-        navigate("/home", { replace: true });
+      if (isLogin) {
+        if (!data.token) {
+          throw new Error("Token missing from response");
+        }
+        localStorage.setItem("token", data.token);
+        window.location.href = "/";
       } else {
-        navigate("/onboarding", { replace: true });
+        alert(`Account created successfully, ${name}!`);
+        setMode("login");
+        setName("");
+        setPassword("");
       }
     } catch (err) {
-      console.error("Login error:", err);
-      setError("Server error. Please try again.");
+      console.error("Auth error:", err);
+      alert("Network error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="greeting-wrapper">
-      <div className="login-container pin-card">
-        <div className="pin blue-pin"></div>
-
-        <div className="auth-header">
-          <div className="auth-icon-box">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3" />
-            </svg>
-          </div>
-          <h3>Sign in with email</h3>
-          <p>Access your learning dashboard securely.</p>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="header">
+          <h1>{isLogin ? "Welcome back" : "Create account"}</h1>
+          <p>
+            {isLogin
+              ? "Sign in to continue"
+              : "Start your journey with us"}
+          </p>
         </div>
 
-        <form className="auth-form" onSubmit={submit}>
+        <div className="form">
+          {!isLogin && (
+            <div className="input-group">
+              <label>Full Name</label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          )}
+
           <div className="input-group">
+            <label>Email Address</label>
             <input
               type="email"
-              placeholder="Email"
+              placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
             />
           </div>
 
           <div className="input-group">
+            <label>Password</label>
             <input
               type="password"
-              placeholder="Password"
+              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
             />
           </div>
 
-          {error && <p className="auth-error">{error}</p>}
-
           <button
-            type="submit"
-            className="greeting-continue-btn auth-submit"
+            className="primary-btn"
+            onClick={submit}
             disabled={loading}
           >
-            {loading ? "Signing in..." : "Get Started"}
+            {loading
+              ? "Please wait..."
+              : isLogin
+              ? "Sign In"
+              : "Create Account"}
           </button>
-        </form>
 
-        <div className="auth-divider">
-          <span>Or sign in with</span>
+          <div className="switch">
+            <span>
+              {isLogin
+                ? "Don’t have an account?"
+                : "Already have an account?"}
+            </span>
+            <button
+              className="link-btn"
+              onClick={() =>
+                setMode(isLogin ? "register" : "login")
+              }
+            >
+              {isLogin ? "Create account" : "Sign in"}
+            </button>
+          </div>
         </div>
-
-        <div className="social-grid">
-          <button className="social-btn">Google</button>
-          <button className="social-btn">Facebook</button>
-          <button className="social-btn">Apple</button>
-        </div>
-      </div>
-
-      <div className="greeting-text">
-        Ebolt <span>Cloud Engine</span>
       </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

@@ -1,9 +1,18 @@
+/* ===== ROOT ===== */
 .dashboard-container {
-  background: #f8fafc;
   min-height: 100vh;
   padding-bottom: 40px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  /* premium background */
+  background-color: #f8fafc;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
+/* ===== CENTER LOADER ===== */
 .dashboard-center {
   height: 100vh;
   display: flex;
@@ -12,42 +21,56 @@
 }
 
 .loader {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #e5e7eb;
-  border-top: 4px solid #4f46e5;
+  width: 42px;
+  height: 42px;
+  border: 4px solid rgba(79, 70, 229, 0.15);
+  border-top-color: #4f46e5;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 
-/* HEADER */
+/* ===== HEADER ===== */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 22px 24px;
 }
 
+.header-title {
+  font-size: 11px;
+  color: #64748b;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ===== ICON BUTTON ===== */
 .icon-btn {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: white;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.header-title {
-  font-size: 12px;
-  color: #64748b;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+.icon-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.12);
 }
 
-/* ACTION GRID */
+.icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== ACTION GRID ===== */
 .action-grid {
   display: flex;
   justify-content: space-around;
@@ -62,21 +85,40 @@
 .action-icon {
   width: 60px;
   height: 60px;
-  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
   border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 8px;
+
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-/* SUBJECT CARD */
+.action-item:hover .action-icon {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.14);
+}
+
+/* ===== SUBJECT CARD ===== */
 .subject-card {
-  background: white;
   margin: 16px 25px;
   padding: 22px;
   border-radius: 26px;
   cursor: pointer;
+
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.subject-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 65px rgba(15, 23, 42, 0.12);
 }
 
 .subject-row {
@@ -85,6 +127,7 @@
   margin-bottom: 16px;
 }
 
+/* ===== SUBJECT ICON ===== */
 .subject-icon {
   width: 52px;
   height: 52px;
@@ -93,11 +136,18 @@
   align-items: center;
   justify-content: center;
   margin-right: 15px;
+
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: white;
+
+  box-shadow: 0 12px 28px rgba(79, 70, 229, 0.45);
 }
 
+/* ===== SUBJECT INFO ===== */
 .subject-info h3 {
   margin: 0;
   font-size: 18px;
+  color: #0f172a;
 }
 
 .subject-info p {
@@ -109,23 +159,40 @@
   margin-left: auto;
   font-weight: 700;
   font-size: 18px;
+  color: #4f46e5;
 }
 
-/* PROGRESS */
+/* ===== PROGRESS BAR ===== */
 .progress-bg {
   height: 10px;
-  background: #e2e8f0;
-  border-radius: 50px;
+  background: #e5e7eb;
+  border-radius: 999px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  border-radius: 50px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+  box-shadow: 0 0 14px rgba(79, 70, 229, 0.45);
+  transition: width 0.8s ease-in-out;
 }
 
+/* ===== ANIMATION ===== */
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* ===== MOBILE OPTIMIZATION ===== */
+@media (max-width: 480px) {
+  .subject-card {
+    margin: 14px 18px;
+    padding: 20px;
+  }
+
+  .action-grid {
+    margin: 24px 0;
   }
 }
