@@ -8,7 +8,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { API_BASE_URL } from "../../../config/api";
-import "./ChapterTests.css";
+import "./chapterTests.css";
 
 /* ================= HELPERS ================= */
 
