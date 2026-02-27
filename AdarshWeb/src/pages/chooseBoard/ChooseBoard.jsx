@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./ChooseBoard.css";
+import "./chooseBoard.css";
 
 import { API_BASE_URL } from "../../config/api";
 
