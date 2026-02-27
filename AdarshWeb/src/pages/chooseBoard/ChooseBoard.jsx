@@ -43,7 +43,7 @@ export default function ChooseBoard() {
         localStorage.setItem("board", selectedBoard);
         localStorage.setItem("classLevel", classLevel);
 
-        window.location.href = "/";
+        window.location.href = "/home";
         return;
       }
 

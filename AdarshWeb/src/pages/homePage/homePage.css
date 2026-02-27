@@ -25,7 +25,7 @@ body {
 .bold-container {
   min-height: 100vh;
   position: relative;
-  overflow: hidden;
+  overflow: visible;   /* ✅ allow page to grow */
   padding: 0 5%;
 }
 

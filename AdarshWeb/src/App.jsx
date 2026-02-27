@@ -4,10 +4,13 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import GreetingPage from "./pages/greeting/GreetingPage";
 import LoginPage from "./pages/loginpage/LoginPage";
 import Onboarding from "./pages/chooseBoard/ChooseBoard";
+import Profile from "./pages/profile/ProfilePage";
+
+
+/* ---------- Home Container ---------- */
+import HomeContainer from "./pages/homePage/HomeContainer";
 
 /* ---------- Protected Pages ---------- */
-import HomePage from "./pages/homePage/HomePage";
-import Home2 from "./pages/home2/Home2";
 import DashBoard from "./pages/dashBoard/DashBoard";
 import RankPredictor from "./pages/rankPredictor/RankPredictor";
 import FlashCards from "./pages/flashCards/FlashCards";
@@ -15,8 +18,7 @@ import TrackExam from "./pages/TrackExam/TrackExam";
 import DailyQuiz from "./pages/DailyQuiz/DailyQuiz";
 import Roadmap from "./pages/roadmap/Roadmap";
 
-/* ---------- class Pages ---------- */
-
+/* ---------- Class Pages ---------- */
 import SubjectResources from "./pages/chapter/SubjectResources";
 import ChapterPage from "./pages/chapter/ChapterPage";
 
@@ -32,43 +34,50 @@ import Materials from "./pages/exam/materials/Materials";
 import Folder from "./pages/exam/materials/Folder";
 import PdfViewer from "./pages/exam/materials/PdfViewer";
 
-/* ---------- Protected Route ---------- */
+/* ---------- PROTECTED ROUTE ---------- */
 const ProtectedRoute = ({ children }) => {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" replace />;
+  const board = localStorage.getItem("board");
+  const classLevel = localStorage.getItem("classLevel");
+
+  // Not logged in
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Logged in but onboarding not completed
+  if (!board || !classLevel) {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  // Fully authenticated + onboarded
+  return children;
 };
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Default */}
+        {/* ---------- Default ---------- */}
         <Route path="/" element={<Navigate to="/greet" replace />} />
 
         {/* ---------- Public Routes ---------- */}
         <Route path="/greet" element={<GreetingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/onboarding" element={<Onboarding />} />
+         <Route path="/profile" element={<Profile />}/>
 
-        {/* ---------- Protected Core Routes ---------- */}
+        {/* ---------- HOME ---------- */}
         <Route
           path="/home"
           element={
             <ProtectedRoute>
-              <HomePage />
+              <HomeContainer />
             </ProtectedRoute>
           }
         />
 
-        <Route
-          path="/homebase"
-          element={
-            <ProtectedRoute>
-              <Home2 />
-            </ProtectedRoute>
-          }
-        />
-
+        {/* ---------- CORE PROTECTED ROUTES ---------- */}
         <Route
           path="/dashboard"
           element={
@@ -123,7 +132,7 @@ function App() {
           }
         />
 
-        {/* ---------- EXAM MODULE (ALL PROTECTED) ---------- */}
+        {/* ---------- EXAM MODULE ---------- */}
         <Route
           path="/exam"
           element={
@@ -214,7 +223,7 @@ function App() {
           }
         />
 
-        {/* /* ---------- CLASS / SYLLABUS MODULE ---------- */}
+        {/* ---------- CLASS / SYLLABUS ---------- */}
         <Route
           path="/chapter/:classLevel/:board/:subject"
           element={

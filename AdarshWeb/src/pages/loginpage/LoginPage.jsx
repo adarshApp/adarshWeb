@@ -54,7 +54,7 @@ export default function Auth() {
           throw new Error("Token missing from response");
         }
         localStorage.setItem("token", data.token);
-        window.location.href = "/";
+        window.location.href = "/home";
       } else {
         alert(`Account created successfully, ${name}!`);
         setMode("login");
