@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./chooseBoard.css";
 
 import { API_BASE_URL } from "../../config/api";
 
 export default function ChooseBoard() {
+  const navigate = useNavigate();
+
   const [selectedBoard, setSelectedBoard] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -43,13 +46,13 @@ export default function ChooseBoard() {
         localStorage.setItem("board", selectedBoard);
         localStorage.setItem("classLevel", classLevel);
 
-        window.location.href = "/home";
+        navigate("/home", { replace: true });
         return;
       }
 
       /* ========= LOGGED USER FLOW ========= */
       if (!token) {
-        window.location.href = "/login";
+        navigate("/login", { replace: true });
         return;
       }
 
@@ -74,7 +77,7 @@ export default function ChooseBoard() {
       localStorage.setItem("board", selectedBoard);
       localStorage.setItem("classLevel", classLevel);
 
-      window.location.href = "/";
+      navigate("/home", { replace: true });
     } catch (err) {
       alert("Network Error. Please check your connection.");
     } finally {
@@ -85,8 +88,7 @@ export default function ChooseBoard() {
   return (
     <div className="choose-container">
       <div className="glass-card">
-        {/* ===== BOARD SELECTION ===== */}
-        {!selectedBoard && (
+        {!selectedBoard ? (
           <>
             <h1 className="title">Choose Your Board</h1>
             <p className="subtitle">Select your education board</p>
@@ -103,10 +105,7 @@ export default function ChooseBoard() {
               ))}
             </div>
           </>
-        )}
-
-        {/* ===== CLASS SELECTION ===== */}
-        {selectedBoard && (
+        ) : (
           <>
             <h1 className="title">Select Class</h1>
             <p className="subtitle">Board: {selectedBoard}</p>
