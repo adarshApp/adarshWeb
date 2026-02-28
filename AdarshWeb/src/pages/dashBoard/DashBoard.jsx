@@ -71,10 +71,10 @@ export default function Dashboard() {
               sub === "physics"
                 ? "#4F46E5"
                 : sub === "chemistry"
-                ? "#D946EF"
-                : sub === "mathematics"
-                ? "#0EA5E9"
-                : "#10B981",
+                  ? "#D946EF"
+                  : sub === "mathematics"
+                    ? "#0EA5E9"
+                    : "#10B981",
           };
         }),
       );
@@ -146,7 +146,11 @@ export default function Dashboard() {
           <div
             key={item.slug}
             className="subject-card"
-            onClick={() => navigate(`/exam`)}
+            onClick={() =>
+              navigate(
+                `/chapter/${userInfo.classLevel}/${userInfo.board.toLowerCase()}/${item.slug}`,
+              )
+            }
           >
             <div className="subject-row">
               <div
