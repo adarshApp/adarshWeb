@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./loginPage.css";
 
 const API_BASE_URL = "https://api.adarsh.store";
 
 export default function Auth() {
+  const navigate = useNavigate();
+
   const [mode, setMode] = useState("login"); // login | register
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,7 +24,9 @@ export default function Auth() {
     try {
       setLoading(true);
 
-      const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+      const endpoint = isLogin
+        ? "/api/auth/login"
+        : "/api/auth/register";
 
       const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: "POST",
@@ -35,9 +40,9 @@ export default function Auth() {
         ),
       });
 
-      // Handle non-JSON errors (CORS / proxy issues)
       const text = await res.text();
       let data;
+
       try {
         data = JSON.parse(text);
       } catch {
@@ -49,13 +54,27 @@ export default function Auth() {
         return;
       }
 
+      /* ---------- LOGIN ---------- */
       if (isLogin) {
         if (!data.token) {
           throw new Error("Token missing from response");
         }
+
         localStorage.setItem("token", data.token);
-        window.location.href = "/home";
-      } else {
+
+        // Check onboarding state
+        const board = localStorage.getItem("board");
+        const classLevel = localStorage.getItem("classLevel");
+
+        if (!board || !classLevel) {
+          navigate("/onboarding", { replace: true });
+        } else {
+          navigate("/home", { replace: true });
+        }
+      }
+
+      /* ---------- REGISTER ---------- */
+      else {
         alert(`Account created successfully, ${name}!`);
         setMode("login");
         setName("");
