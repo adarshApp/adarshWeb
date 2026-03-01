@@ -14,6 +14,35 @@ const HomePage = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // Helper to generate calendar days
+  const generateCalendar = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    const days = [];
+    // Fill initial empty slots for the grid
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      days.push(<div key={`empty-${i}`} className="cal-day empty"></div>);
+    }
+    // Fill actual dates
+    for (let d = 1; d <= daysInMonth; d++) {
+      const isToday = d === now.getDate();
+      days.push(
+        <div key={d} className={`cal-day ${isToday ? 'today' : ''}`}>
+          {d}
+        </div>
+      );
+    }
+    return days;
+  };
+
+  const monthName = new Date().toLocaleString('default', { month: 'long' });
+  const yearName = new Date().getFullYear();
+
   return (
     <div className="bold-container">
       {/* 3D Floating Voxel Elements */}
@@ -54,16 +83,22 @@ const HomePage = () => {
         </section>
 
         <section className="hero-visual-card-area">
-          {/* The High-Contrast Voxel Card */}
-          <div className="feature-voxel-card">
-            <div className="card-badge">TOP RATED</div>
-            <h2 className="card-title">Physics: <br/> Electromagnetics</h2>
-            <p className="card-description">
-              Master complex Maxwell equations with our new 3D visualization modules.
-            </p>
+          {/* Functional Calendar Card */}
+          <div className="feature-voxel-card calendar-card">
+            <div className="card-badge">STUDY TRACKER</div>
+            <h2 className="calendar-header">{monthName} {yearName}</h2>
+            
+            <div className="calendar-grid-header">
+              <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+            </div>
+            
+            <div className="calendar-grid">
+              {generateCalendar()}
+            </div>
+
             <div className="card-stats-footer">
-              <span className="stat-pill">15 Modules</span>
-              <span className="stat-pill">4.9 ★</span>
+              <span className="stat-pill">Daily Goal: 8h</span>
+              <span className="stat-pill">Streak: 5🔥</span>
             </div>
           </div>
         </section>
