@@ -64,8 +64,8 @@ const HomePage = () => {
       <main className="bold-hero-grid">
         <section className="hero-text-content">
           <h1 className="hero-main-title">
-            Fresh & <span className="italic-accent">bold</span> <br /> 
-            study graphics.
+            Learn  <span className="italic-accent">Without Limit. </span> <br /> 
+             ⚡
           </h1>
           
           <p className="hero-subtext">
