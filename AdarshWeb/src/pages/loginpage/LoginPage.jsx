@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./loginPage.css";
 
-const API_BASE_URL = "https://adarshapp.onrender.com/api";
+const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 export default function Auth() {
   const navigate = useNavigate();
