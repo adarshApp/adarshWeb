@@ -1,1 +1,1 @@
-export const API_BASE_URL = "https://api.adarsh.store";
+export const API_BASE_URL = "https://adarshapp.onrender.com/api";

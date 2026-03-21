@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./loginPage.css";
 
-const API_BASE_URL = "https://api.adarsh.store";
+const API_BASE_URL = "https://adarshapp.onrender.com/api";
 
 export default function Auth() {
   const navigate = useNavigate();
