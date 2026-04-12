@@ -35,7 +35,7 @@ export default function ChapterPage() {
 
       const syllabus = await syllabusRes.json();
       const foundChapter = syllabus.chapters.find(
-        (c) => String(c.id) === String(chapterId)
+        (c) => String(c.file) === String(chapterId)
       );
 
       if (!foundChapter) {
