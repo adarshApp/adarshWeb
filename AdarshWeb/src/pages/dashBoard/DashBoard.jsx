@@ -14,7 +14,7 @@ import {
   Activity,
 } from "lucide-react";
 
-const API_BASE_URL = "https://api.adarsh.store";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 /* ---------- ICON MAP ---------- */
 const subjectIcons = {
