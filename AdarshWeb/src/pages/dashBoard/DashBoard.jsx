@@ -53,7 +53,7 @@ export default function Dashboard() {
       const userData = await userRes.json();
       setUserInfo(userData);
 
-      const subjectList = ["physics", "chemistry", "mathematics", "biology"];
+      const subjectList = ["physics", "chemistry", "mathematics", "Biology"];
 
       const finalData = await Promise.all(
         subjectList.map(async (sub) => {
