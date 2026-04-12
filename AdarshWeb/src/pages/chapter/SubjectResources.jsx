@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import "./subjectResources.css";
 import { ChevronLeft, ArrowRight } from "lucide-react";
 
-const API_BASE_URL = "https://api.adarsh.store";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function SubjectResources() {
   const navigate = useNavigate();
