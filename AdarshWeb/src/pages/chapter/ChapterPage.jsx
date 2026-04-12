@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import "./chapterPage.css";
 import { CheckCircle, ChevronLeft } from "lucide-react";
 
-const API_BASE_URL = "https://api.adarsh.store";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function ChapterPage() {
   const navigate = useNavigate();
