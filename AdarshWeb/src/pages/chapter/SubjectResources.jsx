@@ -87,9 +87,7 @@ export default function SubjectResources() {
             key={item.id}
             className="chapter-card"
             onClick={() =>
-              navigate(
-                `/chapter/${classLevel}/${board}/${subject}/${item.id}`
-              )
+             navigate(`/chapter/${classLevel}/${board}/${subject}/${item.file}`)
             }
           >
             <span className="unit-badge">UNIT {item.unit}</span>
