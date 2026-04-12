@@ -21,7 +21,7 @@ const subjectIcons = {
   physics: <Zap size={22} />,
   chemistry: <Beaker size={22} />,
   mathematics: <Divide size={22} />,
-  biology: <Activity size={22} />,
+  Biology: <Activity size={22} />,
 };
 
 export default function Dashboard() {
