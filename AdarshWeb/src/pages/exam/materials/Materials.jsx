@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import "./materials.css";
 
-const API_BASE_URL = "https://api.adarsh.store";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Materials() {
   const { examName } = useParams();

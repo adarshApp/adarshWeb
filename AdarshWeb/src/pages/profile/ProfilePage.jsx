@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, RefreshCw, LogOut, Settings, Bell, Award } from "lucide-react";
 import "./ProfilePage.css";
 
-const API_BASE_URL = "https://api.adarsh.store";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 const avatarList = [
   "/avatars/avatar1.png",
