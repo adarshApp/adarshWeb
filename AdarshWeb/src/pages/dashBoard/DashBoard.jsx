@@ -58,17 +58,15 @@ export default function Dashboard() {
       const finalData = await Promise.all(
         subjectList.map(async (sub) => {
           const syllabusRes = await fetch(
-  `${API_BASE_URL}/api/syllabus/${userData.classLevel}/${userData.board.toLowerCase()}`
-);
-const data = await syllabusRes.json();
-
-setSubjects(data);
+            `${API_BASE_URL}/api/syllabus/${userData.classLevel}/${userData.board.toLowerCase()}/${sub}`,
+          );
           const syllabus = await syllabusRes.json();
 
           return {
-            name: syllabus.subject,
+            name: syllabus.subject || syllabus.name || sub.toUpperCase(),
             slug: sub,
-            totalChapters: syllabus.chapters.length,
+            totalChapters:
+              syllabus.chapters?.length || syllabus.units?.length || 0,
             completedChapters: 0,
             color:
               sub === "physics"
