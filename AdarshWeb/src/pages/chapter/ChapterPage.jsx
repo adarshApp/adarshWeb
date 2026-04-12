@@ -34,6 +34,7 @@ export default function ChapterPage() {
       );
 
       const syllabus = await syllabusRes.json();
+
       const foundChapter = syllabus.chapters.find(
         (c) => String(c.file) === String(chapterId)
       );
@@ -53,7 +54,13 @@ export default function ChapterPage() {
       );
 
       const contentData = await contentRes.json();
-      setContent(contentData);
+
+      // ✅ FIX: handle both normal & wrapped response
+      const normalizedContent = contentData.default || contentData;
+
+      console.log("CONTENT DATA:", normalizedContent); // debug (optional)
+
+      setContent(normalizedContent);
 
       /* 3️⃣ Load progress */
       if (token) {
@@ -118,7 +125,8 @@ export default function ChapterPage() {
     );
   }
 
-  if (!chapter || !content) {
+  // ✅ FIX: also check empty object
+  if (!chapter || !content || Object.keys(content).length === 0) {
     return (
       <div className="cp-center">
         <p>Chapter not found</p>
