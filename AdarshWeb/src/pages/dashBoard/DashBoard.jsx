@@ -15,7 +15,8 @@ import {
   Dna,
   BookOpen,
   LogOut,
-  LayoutDashboard
+  LayoutDashboard,
+  ArrowLeft
 } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
@@ -160,6 +161,14 @@ export default function Dashboard() {
       {/* MAIN CONTAINER CONTENT */}
       <main className="bold-main-viewport">
         
+        {/* BACK BUTTON ROW */}
+        <div className="back-btn-container">
+          <button className="bold-back-btn" onClick={() => navigate(-1)}>
+            <ArrowLeft size={16} strokeWidth={3} />
+            <span>GO BACK</span>
+          </button>
+        </div>
+
         {/* TOP BAR BRAND ROW */}
         <header className="bold-dashboard-header">
           <div>

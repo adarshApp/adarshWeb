@@ -441,3 +441,38 @@
   .hero-feature-grid { grid-template-columns: 1fr; }
   .tools-brutalist-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* Container to give the button a clean margin structure above the header */
+.back-btn-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+/* Brutalist Back Button Style */
+.bold-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: var(--border-black);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 4px 4px 0px #000000;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+/* Hover and Click transformations to match your Home Page buttons */
+.bold-back-btn:hover {
+  background: var(--accent-yellow);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000000;
+}
+
+.bold-back-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000000;
+}
