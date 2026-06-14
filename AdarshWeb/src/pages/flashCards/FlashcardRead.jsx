@@ -48,14 +48,15 @@ export default function FlashcardRead() {
 
       const data = await res.json();
 
-      /* ---------- FIXED: Secure object extraction directly from array matrix data wrappers ---------- */
       if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-        setChapter(data.data); // Save whole object containing title, desc, and theory array
+        setChapter(data.data[0]);
       } else if (data && data.theory) {
         setChapter(data);
       } else {
         throw new Error("No flashcard data found");
       }
+
+
     } catch (err) {
       console.error("Backend content stream link refused:", err);
       setChapter(null);
@@ -86,7 +87,6 @@ export default function FlashcardRead() {
   return (
     <div className="flashcard-read-layout">
       <div className="flashcard-read-container">
-        
         {/* INTERACTION LINK BACK BUTTON ROW */}
         <header className="flashcard-read-header">
           <button className="back-btn" onClick={() => navigate(-1)}>
@@ -101,21 +101,25 @@ export default function FlashcardRead() {
         {/* INTEGRATED CARD CONTAINER */}
         <div className="tactics-brutalist-card">
           <div className="card-scroll-body">
-            
             {/* Title Section */}
             <h1 className="flashcard-title">
-              <span className="card-icon">{chapter.icon || "👁️"}</span> {chapter.title}
+              <span className="card-icon">{chapter.icon || "👁️"}</span>{" "}
+              {chapter.title}
             </h1>
 
             {/* Meta Parameters Row */}
             <div className="meta-row">
               <div className="meta-pill">
                 <ShieldAlert size={14} />
-                <span>{String(chapter.difficulty || "MEDIUM").toUpperCase()}</span>
+                <span>
+                  {String(chapter.difficulty || "MEDIUM").toUpperCase()}
+                </span>
               </div>
               <div className="meta-pill">
                 <Clock size={14} />
-                <span>{String(chapter.estTime || "20 MINS").toUpperCase()}</span>
+                <span>
+                  {String(chapter.estTime || "20 MINS").toUpperCase()}
+                </span>
               </div>
             </div>
 
@@ -131,7 +135,9 @@ export default function FlashcardRead() {
                     <div
                       key={index}
                       className="highlight-card"
-                      style={{ borderLeft: `6px solid ${item.color || "#f59e0b"}` }}
+                      style={{
+                        borderLeft: `6px solid ${item.color || "#f59e0b"}`,
+                      }}
                     >
                       <h4>{item.text}</h4>
                     </div>
@@ -159,7 +165,6 @@ export default function FlashcardRead() {
                 );
               })}
             </div>
-
           </div>
 
           {/* Static Bottom Deck Footer Info Brand */}
@@ -168,7 +173,6 @@ export default function FlashcardRead() {
             <span>SCROLL TO VIEW COMPLETE MODULE</span>
           </div>
         </div>
-
       </div>
     </div>
   );
