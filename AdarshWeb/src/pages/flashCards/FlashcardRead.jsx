@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, RotateCw, CheckCircle, HelpCircle } from "lucide-react";
-import "./flashcard.css";
+import "./flashcards.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://abarsh-backend.onrender.com";
 
