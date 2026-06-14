@@ -34,34 +34,40 @@ export default function FlashcardRead() {
       setIsFlipped(false);
       setCurrentIndex(0);
 
-      // Fetch from exact API pattern seen in your React Native fetch: /api/content/:class/:board/:subject/flashcard/:topic
+      // Fetching from the specified backend endpoint layout mapping
       const res = await fetch(`${API_BASE_URL}/api/content/${classLevel}/${board}/${subject}/flashcard/${topicSlug}`);
       const data = await res.json();
 
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-        const rawPayload = data.data;
-        
-        // Save metadata fields (icon, difficulty, weightage, estTime, description)
+      if (data.success && data.data) {
+        // Resolve whether backend wraps the data node in an array package or directly exposes the target object
+        const rawPayload = Array.isArray(data.data) ? data.data : data.data;
+
+        if (!rawPayload) {
+          throw new Error("Payload matrix evaluation resolved to empty or null.");
+        }
+
+        // Save metadata fields matching React Native fields (icon, difficulty, weightage, estTime, description)
         setDeckMeta({
-          title: rawPayload.title,
+          title: rawPayload.title || cleanTitle(topicSlug),
           icon: rawPayload.icon || "📘",
           difficulty: rawPayload.difficulty || "Medium",
           weightage: rawPayload.weightage || "High",
           estTime: rawPayload.estTime || "15 mins",
-          description: rawPayload.description
+          description: rawPayload.description || "Conceptual structural unit study block profile view."
         });
 
         if (Array.isArray(rawPayload.theory)) {
-          setCurrentCards(chunkTheoryIntoCards(rawPayload.theory));
+          const processedCards = chunkTheoryIntoCards(rawPayload.theory);
+          setCurrentCards(processedCards);
         } else {
-          throw new Error("Theory blocks missing from node");
+          throw new Error("Theory blocks missing or improperly structured from node database cluster.");
         }
       } else {
-        throw new Error("No payload tracked inside backend cluster data block");
+        throw new Error("No payload tracked inside backend cluster data block hierarchy");
       }
     } catch (err) {
       console.error("Error reading single card file data:", err);
-      // Clean Neo-Brutalist structural layout recovery placeholder fallback
+      // Clean structural layout recovery placeholder fallback
       setDeckMeta({
         title: cleanTitle(topicSlug),
         icon: "⚡",
@@ -72,7 +78,7 @@ export default function FlashcardRead() {
       setCurrentCards([
         {
           title: "Flashcard Error Recovery Node",
-          question: "Failed to securely parse runtime tokens from API endpoint.",
+          question: "Failed to securely parse runtime tokens from API endpoint matrix layers.",
           answerBlocks: [
             { type: "highlight", text: "Troubleshooting Action Required" },
             { type: "theory", text: "Verify your server instance is live and CORS permissions accept traffic from local origins." }
@@ -84,20 +90,24 @@ export default function FlashcardRead() {
     }
   }
 
-  // 2. Chunks raw theory lists into flashcards based on "Flashcard X:" headers
+  // 2. Chunks raw theory lists into flashcards based on "Flashcard X:" headers or block splits
   function chunkTheoryIntoCards(theoryArray) {
     const flashcardsList = [];
     let currentChunk = null;
 
     theoryArray.forEach((item) => {
-      if (item.type === "highlight" && (item.text.startsWith("Flashcard") || item.text.startsWith("Card"))) {
+      // Catch layout strings that declare a new card split segment block boundary
+      const isHeader = item.type === "highlight" && 
+        (item.text.startsWith("Flashcard") || item.text.startsWith("Card") || item.text.startsWith("Topic"));
+
+      if (isHeader) {
         if (currentChunk) flashcardsList.push(currentChunk);
         currentChunk = { title: item.text, question: "", answerBlocks: [] };
       } else {
         if (!currentChunk) {
           currentChunk = { title: "Foundational Insight Node", question: "", answerBlocks: [] };
         }
-        // Capture the first theory point to use as the question text on the front of the card
+        // Use the first standard theory block description string encounter as the Front Prompt Question display
         if (item.type === "theory" && !currentChunk.question) {
           currentChunk.question = item.text;
         } else {
@@ -110,8 +120,10 @@ export default function FlashcardRead() {
     return flashcardsList.map((card) => ({
       ...card,
       question: card.question || `Analyze the conceptual layout formulas and statements inside ${card.title}`,
-      // If the header card contains a theory item on the front, copy it to the answer blocks so it isn't lost
-      answerBlocks: card.answerBlocks.length === 0 && card.question ? [{ type: "theory", text: card.question }] : card.answerBlocks
+      // Fallback architecture checks: make sure theory details don't go missing if blocks array evaluates empty
+      answerBlocks: card.answerBlocks.length === 0 && card.question 
+        ? [{ type: "theory", text: card.question }] 
+        : card.answerBlocks
     }));
   }
 
@@ -176,7 +188,7 @@ export default function FlashcardRead() {
             <div className="brutalist-progress-track">
               <div 
                 className="brutalist-progress-fill" 
-                style={{ width: `${((currentIndex + 1) / currentCards.length) * 100}%` }}
+                style={{ width: `${currentCards.length ? ((currentIndex + 1) / currentCards.length) * 100 : 0}%` }}
               />
             </div>
           </div>
@@ -203,7 +215,7 @@ export default function FlashcardRead() {
                 </div>
               </div>
 
-              {/* REVERSE CARD FACE (Dynamic payload parsing template) */}
+              {/* REVERSE CARD FACE (Dynamic payload parsing template matches React Native design styles) */}
               <div className="flashcard-side back-side white-bg-brutalist">
                 <div className="card-top-meta">
                   <span className="side-badge black-text bg-yellow">COMPILED MECHANICAL INSIGHTS</span>
@@ -215,14 +227,14 @@ export default function FlashcardRead() {
                   {activeCard?.answerBlocks?.map((block, bIdx) => {
                     if (block.type === "highlight") {
                       return (
-                        <div key={bIdx} className="brutalist-payload-highlight" style={{ borderLeftColor: block.color || "#000" }}>
+                        <div key={bIdx} className="brutalist-payload-highlight" style={{ borderLeftColor: block.color || "#F59E0B" }}>
                           <h4>{block.text}</h4>
                         </div>
                       );
                     }
                     if (block.type === "formula") {
                       return (
-                        <div key={bIdx} className="brutalist-payload-formula">
+                        <div key={bIdx} className="brutalist-payload-formula" style={{ color: block.color || "#4F46E5" }}>
                           <code>{block.text}</code>
                         </div>
                       );
