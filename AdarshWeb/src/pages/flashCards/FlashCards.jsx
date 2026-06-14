@@ -22,8 +22,14 @@ export default function FlashCards() {
     try {
       setLoading(true);
       const res = await fetch(
-        `${API_BASE_URL}/api/flashcards?subject=${activeSubject}`
+        `${API_BASE_URL}/api/content/class-12/CBSE/${activeSubject}/flashcard`,
       );
+
+      const data = await res.json();
+
+      if (data.success) {
+        setCards(data.files);
+      }
       const data = await res.json();
       setCards(data);
     } catch (e) {
@@ -68,9 +74,7 @@ export default function FlashCards() {
         {SUBJECTS.map((sub) => (
           <button
             key={sub}
-            className={`subject-chip ${
-              activeSubject === sub ? "active" : ""
-            }`}
+            className={`subject-chip ${activeSubject === sub ? "active" : ""}`}
             onClick={() => setActiveSubject(sub)}
           >
             {sub.toUpperCase()}
@@ -103,14 +107,8 @@ export default function FlashCards() {
       {/* ===== MODAL ===== */}
       {selectedCard && (
         <div className="modal-overlay" onClick={() => setSelectedCard(null)}>
-          <div
-            className="modal-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className="close-btn"
-              onClick={() => setSelectedCard(null)}
-            >
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <button className="close-btn" onClick={() => setSelectedCard(null)}>
               ✕
             </button>
 
@@ -123,9 +121,7 @@ export default function FlashCards() {
               if (item.type === "formula") {
                 return (
                   <div key={i} className="formula-box">
-                    <span
-                      style={{ color: item.color || "#4F46E5" }}
-                    >
+                    <span style={{ color: item.color || "#4F46E5" }}>
                       {item.text}
                     </span>
                   </div>
