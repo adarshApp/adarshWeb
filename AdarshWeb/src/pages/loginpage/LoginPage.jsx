@@ -15,7 +15,10 @@ export default function Auth() {
 
   const isLogin = mode === "login";
 
-  const submit = async () => {
+  const submit = async (e) => {
+    // Prevent default form submission behavior if triggered by onSubmit
+    if (e) e.preventDefault();
+
     if (!email || !password || (!isLogin && !name)) {
       alert("Please fill all fields");
       return;
@@ -62,11 +65,16 @@ export default function Auth() {
 
         localStorage.setItem("token", data.token);
 
-        // Check onboarding state
-        const board = localStorage.getItem("board");
-        const classLevel = localStorage.getItem("classLevel");
+        // Sync user data to localStorage matching mobile architecture
+        if (data.user) {
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
 
-        if (!board || !classLevel) {
+        // Direct check against backend data payload
+        const board = data.user?.board;
+        const className = data.user?.className;
+
+        if (!board || !className) {
           navigate("/onboarding", { replace: true });
         } else {
           navigate("/home", { replace: true });
@@ -100,12 +108,14 @@ export default function Auth() {
           </p>
         </div>
 
-        <div className="form">
+        {/* Semantically correct HTML form wrapper */}
+        <form className="form" onSubmit={submit}>
           {!isLogin && (
             <div className="input-group">
               <label>Full Name</label>
               <input
                 type="text"
+                name="name"
                 placeholder="John Doe"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -117,6 +127,7 @@ export default function Auth() {
             <label>Email Address</label>
             <input
               type="email"
+              name="email"
               placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -127,15 +138,17 @@ export default function Auth() {
             <label>Password</label>
             <input
               type="password"
+              name="password"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
 
+          {/* Type set to "submit" for accessibility and keyboard support */}
           <button
+            type="submit"
             className="primary-btn"
-            onClick={submit}
             disabled={loading}
           >
             {loading
@@ -152,6 +165,7 @@ export default function Auth() {
                 : "Already have an account?"}
             </span>
             <button
+              type="button" // Prevents form submission when toggle is clicked
               className="link-btn"
               onClick={() =>
                 setMode(isLogin ? "register" : "login")
@@ -160,7 +174,7 @@ export default function Auth() {
               {isLogin ? "Create account" : "Sign in"}
             </button>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
