@@ -45,17 +45,16 @@ export default function Dashboard() {
         return;
       }
 
-      // 1. Fetch live profile data from backend
+      // 1. Fetch live user profile configuration matching mobile backend structure
       const userRes = await fetch(`${API_BASE_URL}/api/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const userData = await userRes.json();
       
-      // Extract the nested user data correctly based on your API controller payload structure
       const userProfile = userData.user || userData;
       setUserInfo(userProfile);
 
-      // 2. Safeguard fallback onboarding check if data hasn't synced locally yet
+      // 2. Extract profile fields matching cross-platform keys
       const board = userProfile.board || localStorage.getItem("board");
       const className = userProfile.className || localStorage.getItem("className");
 
@@ -64,9 +63,10 @@ export default function Dashboard() {
         return;
       }
 
-      const subjectList = ["physics", "chemistry", "mathematics", "biology"];
+      // Ordered precisely to match your native system parameters
+      const subjectList = ["mathematics", "physics", "biology", "chemistry"];
 
-      // 3. Coordinate parallel requests using synchronized naming conventions
+      // 3. Coordinate parallel pipeline queries
       const finalData = await Promise.all(
         subjectList.map(async (sub) => {
           try {
@@ -76,25 +76,30 @@ export default function Dashboard() {
             );
             const syllabus = await syllabusRes.json();
 
+            // Establish strict title normalization logic
+            let displayTitle = sub.charAt(0).toUpperCase() + sub.slice(1);
+            if (syllabus.subject || syllabus.name) {
+              displayTitle = syllabus.subject || syllabus.name;
+            }
+
+            // Sync color constants directly to match your setup
+            let cardColor = "#7EC8FF"; // default chemistry blue
+            if (sub === "mathematics") cardColor = "#FF7D6A";
+            else if (sub === "physics") cardColor = "#D9FFB5";
+            else if (sub === "biology") cardColor = "#D9D1FF";
+
             return {
-              name: syllabus.subject || syllabus.name || sub.toUpperCase(),
+              name: displayTitle,
               slug: sub,
               totalChapters:
                 syllabus.chapters?.length || syllabus.units?.length || 0,
-              completedChapters: 0,
-              color:
-                sub === "physics"
-                  ? "#4F46E5"
-                  : sub === "chemistry"
-                    ? "#D946EF"
-                    : sub === "mathematics"
-                      ? "#0EA5E9"
-                      : "#10B981",
+              completedChapters: 0, // Fallback placeholder mirroring mobile storage structures
+              color: cardColor,
             };
           } catch (fetchErr) {
             console.error(`Error fetching syllabus for ${sub}:`, fetchErr);
             return {
-              name: sub.toUpperCase(),
+              name: sub.charAt(0).toUpperCase() + sub.slice(1),
               slug: sub,
               totalChapters: 0,
               completedChapters: 0,
