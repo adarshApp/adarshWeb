@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Brain, Layers, ChevronRight, RotateCw, CheckCircle, HelpCircle } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import "./flashcard.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://abarsh-backend.onrender.com";
@@ -13,14 +13,7 @@ export default function FlashcardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Immersive Modal states
-  const [selectedTopic, setSelectedTopic] = useState(null);
-  const [currentCards, setCurrentCards] = useState([]);
-  const [cardsLoading, setCardsLoading] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  // Constants (Can be dynamic based on your userInfo auth if available)
+  // Constants 
   const defaultClass = "class-12";
   const defaultBoard = "CBSE";
   const defaultSubject = "physics";
@@ -53,37 +46,17 @@ export default function FlashcardPage() {
     }
   }
 
-  // 2. Fetch specific single card data payload when a dashboard topic card is opened
-  async function loadTopicCards(topicSlug) {
-    try {
-      setCardsLoading(true);
-      setSelectedTopic(topicSlug);
-      setCurrentIndex(0);
-      setIsFlipped(false);
-
-      // Matches your route: /:class/:board/:subject/flashcard/:topic
-      const res = await fetch(`${API_BASE_URL}/api/content/${defaultClass}/${defaultBoard}/${defaultSubject}/flashcard/${topicSlug}`);
-      const data = await res.json();
-
-      // Adjust condition based on your single deck's actual item schema inside the individual files
-      if (data && Array.isArray(data.flashcards)) {
-        setCurrentCards(data.flashcards);
-      } else if (Array.isArray(data)) {
-        setCurrentCards(data);
-      } else {
-        // Concrete Neo-brutalist contextual fallbacks matching item content
-        setCurrentCards([
-          { question: `What is the core working principle of [${topicSlug.replace(/-/g, " ")}]?`, answer: "It relies fundamentally on structural potential difference changes and loop conservation metrics." },
-          { question: "State its standard SI units and dimensional parameters.", answer: "Dimension matches standard field variables; units calculated via standard system constants." },
-          { question: "What is a frequent real-world application of this mechanism?", answer: "Widely seen in solid-state computing, microprocessors, and heavy operational logic arrays." }
-        ]);
-      }
-    } catch (err) {
-      console.error("Error loading specific cards:", err);
-    } finally {
-      setCardsLoading(false);
-    }
-  }
+  const handleTopicClick = (topicSlug) => {
+    // Navigate cleanly to the reading layout page, sending topic variables down via state parameters
+    navigate("/flashcardRead", { 
+      state: { 
+        topicSlug,
+        classLevel: defaultClass,
+        board: defaultBoard,
+        subject: defaultSubject
+      } 
+    });
+  };
 
   const cleanTitle = (slug) => {
     return slug
@@ -124,7 +97,7 @@ export default function FlashcardPage() {
           <h1 className="welcome-heading">
             Flashcard <span className="italic-accent">Command</span>
           </h1>
-          <p className="welcome-sub">Select an interactive structural node below to start training memory optimization metrics.</p>
+          <p className="welcome-sub">Select an interactive structural node below to open your dedicated reading viewport.</p>
         </div>
 
         {error && (
@@ -139,7 +112,7 @@ export default function FlashcardPage() {
             <div 
               key={idx} 
               className="roadmap-topic-card"
-              onClick={() => loadTopicCards(topic)}
+              onClick={() => handleTopicClick(topic)}
             >
               <div className="card-left-design">
                 <div className="index-square">{idx + 1}</div>
@@ -155,114 +128,6 @@ export default function FlashcardPage() {
             </div>
           ))}
         </div>
-
-        {/* IMMERSIVE MODAL OVERLAY PORTAL FOR ACTIVE TRAINING */}
-        {selectedTopic && (
-          <div className="immersive-deck-overlay">
-            <div className="modal-brutalist-content">
-              
-              {/* MODAL ACTION CLOSE BAR */}
-              <div className="modal-action-bar">
-                <h3>DECK: {cleanTitle(selectedTopic)}</h3>
-                <button className="modal-close-pill" onClick={() => setSelectedTopic(null)}>
-                  CLOSE NODE [X]
-                </button>
-              </div>
-
-              {cardsLoading ? (
-                <div className="modal-loader-wrap">
-                  <div className="loader" />
-                </div>
-              ) : (
-                <div className="modal-card-workspace">
-                  
-                  {/* PROGRESS CALCULATION BANNER */}
-                  <div className="modal-progress-strip">
-                    <div className="progress-numbers">
-                      <span>CARD TIMELINE STATUS:</span>
-                      <strong>{currentIndex + 1} / {currentCards.length}</strong>
-                    </div>
-                    <div className="brutalist-progress-track">
-                      <div 
-                        className="brutalist-progress-fill" 
-                        style={{ width: `${((currentIndex + 1) / currentCards.length) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* 3D ROTATION AXIS MATRICES SYSTEM */}
-                  <div 
-                    className={`brutalist-flashcard-container ${isFlipped ? "flipped" : ""}`}
-                    onClick={() => setIsFlipped(!isFlipped)}
-                  >
-                    <div className="flashcard-inner">
-                      
-                      {/* FRONT FACE SIDE */}
-                      <div className="flashcard-side front-side yellow-accent">
-                        <div className="card-top-meta">
-                          <span className="side-badge">PROMPT / QUESTION</span>
-                          <HelpCircle size={18} />
-                        </div>
-                        <div className="card-core-body">
-                          <p className="card-text-display">{currentCards[currentIndex]?.question}</p>
-                        </div>
-                        <div className="card-action-hint">
-                          <RotateCw size={14} />
-                          <span>TAP ACTIVE NODE TO FLIP AND VALIDATE</span>
-                        </div>
-                      </div>
-
-                      {/* REVERSE FACE SIDE */}
-                      <div className="flashcard-side back-side blue-accent">
-                        <div className="card-top-meta">
-                          <span className="side-badge black-text">ANSWER SPECIFICATION</span>
-                          <CheckCircle size={18} color="#000" />
-                        </div>
-                        <div className="card-core-body">
-                          <p className="card-text-display black-text">{currentCards[currentIndex]?.answer}</p>
-                        </div>
-                        <div className="card-action-hint black-text">
-                          <RotateCw size={14} />
-                          <span>TAP NODE TO ROTATE BACK</span>
-                        </div>
-                      </div>
-
-                    </div>
-                  </div>
-
-                  {/* ITERATION SYSTEM ACTIONS TOOLBAR */}
-                  <div className="modal-controls-row">
-                    <button 
-                      className="brutalist-nav-control-btn"
-                      disabled={currentIndex === 0}
-                      onClick={() => { setIsFlipped(false); setCurrentIndex(p => p - 1); }}
-                    >
-                      ← BACK ELEMENT
-                    </button>
-                    
-                    {currentIndex < currentCards.length - 1 ? (
-                      <button 
-                        className="brutalist-nav-control-btn primary-action"
-                        onClick={() => { setIsFlipped(false); setCurrentIndex(p => p + 1); }}
-                      >
-                        NEXT ELEMENT →
-                      </button>
-                    ) : (
-                      <button 
-                        className="brutalist-nav-control-btn finish-action"
-                        onClick={() => setSelectedTopic(null)}
-                      >
-                        DECK FINISHED ✓
-                      </button>
-                    )}
-                  </div>
-
-                </div>
-              )}
-
-            </div>
-          </div>
-        )}
 
       </div>
     </div>

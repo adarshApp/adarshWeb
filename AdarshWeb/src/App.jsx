@@ -14,6 +14,7 @@ import HomeContainer from "./pages/homePage/HomeContainer";
 import DashBoard from "./pages/dashBoard/DashBoard";
 import RankPredictor from "./pages/rankPredictor/RankPredictor";
 import FlashCards from "./pages/flashCards/FlashCards";
+import FlashcardRead from "./pages/flashCards/FlashcardRead";
 import TrackExam from "./pages/TrackExam/TrackExam";
 import DailyQuiz from "./pages/DailyQuiz/DailyQuiz";
 import Roadmap from "./pages/roadmap/Roadmap";
@@ -101,6 +102,15 @@ function App() {
           element={
             <ProtectedRoute>
               <FlashCards />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/flashcardRead"
+          element={
+            <ProtectedRoute>
+              <FlashcardRead />
             </ProtectedRoute>
           }
         />
