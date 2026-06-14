@@ -1,100 +1,254 @@
-/* Layout enhancements for content streaming nodes */
-
-.modal-brutalist-content.large-scale {
-  max-width: 800px;
-  width: 95vw;
-}
-
-.meta-text-wrap {
+/* ==========================================================================
+   1. FLAT VIEWPORT STRUCTURES
+   ========================================================================== */
+.flat-readview-layout {
+  min-height: 100vh;
+  background-color: #f8f8f8;
+  padding: 40px 10%;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
 
-.micro-badge-node {
-  font-size: 0.6rem;
-  font-weight: 800;
-  background-color: #000;
-  color: #fff;
-  padding: 2px 6px;
-  border-radius: 3px;
-}
-
-.alignment-top {
-  align-items: flex-start !important;
-  justify-content: flex-start !important;
-  text-align: left !important;
-  padding-top: 15px !important;
-}
-
-.dynamic-fontSize {
-  font-size: 1.5rem !important;
-  line-height: 1.4 !important;
-}
-
-/* Scroll Area for technical deep arrays payload */
-.card-scrollable-payload-area {
-  flex: 1;
+.flat-readview-viewport {
   width: 100%;
-  overflow-y: auto;
-  text-align: left;
-  padding: 15px 5px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  max-width: 750px;
 }
 
-/* Custom scroll styling to match neobrutalism aesthetics */
-.card-scrollable-payload-area::-webkit-scrollbar {
+.readview-nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.readview-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 2px solid #000000;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 4px 4px 0px #000000;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.readview-back-btn:hover {
+  background: #ffee00;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #000000;
+}
+
+.readview-info-pill {
+  background: #ffffff;
+  border: 2px solid #000000;
+  padding: 8px 16px;
+  font-weight: 800;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  box-shadow: 4px 4px 0px #000000;
+}
+
+/* Metadata summary titles block elements */
+.readview-welcome-block {
+  margin-bottom: 30px;
+}
+
+.readview-main-heading {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  color: #000000;
+}
+
+.readview-badge-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.readview-meta-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  box-shadow: 3px 3px 0px #000000;
+}
+
+.readview-subtext {
+  font-size: 1.05rem;
+  color: #444444;
+  line-height: 1.5;
+  margin-top: 14px;
+}
+
+/* ==========================================================================
+   2. PROGRESS BAR & METRICS STRIP
+   ========================================================================== */
+.readview-progress-strip {
+  margin-bottom: 25px;
+}
+
+.readview-progress-numbers {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.readview-progress-track {
+  background: #ffffff;
+  border: 2px solid #000000;
+  height: 14px;
+  border-radius: 50px;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.readview-progress-fill {
+  height: 100%;
+  border-radius: 50px;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ==========================================================================
+   3. THE FLAT STATIC STUDY DECK CARD (Image Blueprint Skin)
+   ========================================================================== */
+.flat-brutalist-deck-card {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  border-radius: 24px;
+  height: 480px; /* Locked height framework with scrollable body */
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  box-shadow: 10px 10px 0px #000000;
+  margin-bottom: 35px;
+  position: relative;
+}
+
+.flat-card-header-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.flat-card-micro-badge {
+  background: #000000;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* Core scroll panel box */
+.flat-card-scroll-body {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom Scrollbar */
+.flat-card-scroll-body::-webkit-scrollbar {
   width: 8px;
 }
-.card-scrollable-payload-area::-webkit-scrollbar-track {
-  background: #f0f0f0;
-  border-left: 1px solid #000;
+.flat-card-scroll-body::-webkit-scrollbar-track {
+  background: #f8f8f8;
+  border-left: 1px solid #000000;
+  border-radius: 4px;
 }
-.card-scrollable-payload-area::-webkit-scrollbar-thumb {
-  background: #000;
+.flat-card-scroll-body::-webkit-scrollbar-thumb {
+  background: #000000;
   border-radius: 4px;
 }
 
-/* Token Styling Maps */
-.white-bg-brutalist {
-  background-color: #ffffff !important;
+/* Primary Top Prompt Block */
+.flat-card-question-box {
+  border-left: 6px solid #000000;
+  padding-left: 16px;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
-.bg-yellow {
-  background-color: var(--accent-yellow) !important;
+.question-icon-tag {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #444444;
+  margin-bottom: 6px;
+  text-transform: uppercase;
 }
 
-.brutalist-payload-highlight {
-  border-left: 5px solid #000;
+.flat-card-question-box h3 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: #000000;
+  margin: 0;
+}
+
+.flat-card-divider-line {
+  height: 2px;
+  background-color: #000000;
+  margin-bottom: 20px;
+  opacity: 0.15;
+}
+
+/* Sequential payload items listing layout */
+.flat-card-payload-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  padding-bottom: 20px;
+}
+
+.flat-payload-highlight {
+  border-left: 5px solid #F59E0B;
   padding-left: 12px;
-  margin: 6px 0;
 }
 
-.brutalist-payload-highlight h4 {
-  font-size: 1.15rem;
+.flat-payload-highlight h4 {
+  font-size: 1.1rem;
   font-weight: 800;
   text-transform: uppercase;
   margin: 0;
-  color: #000;
+  color: #000000;
 }
 
-.brutalist-payload-formula {
-  background-color: #f1f5f9;
-  border: 2px solid #000;
+.flat-payload-formula {
+  background-color: #f8fafc;
+  border: 2px solid #000000;
   padding: 12px 16px;
   border-radius: 8px;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 700;
   font-family: monospace, monospace;
-  box-shadow: 3px 3px 0px #000;
-  color: #1e1b4b;
+  box-shadow: 3px 3px 0px #000000;
   word-break: break-word;
 }
 
-.brutalist-payload-theory {
+.flat-payload-theory {
   font-size: 1.05rem;
   font-weight: 600;
   color: #334155;
@@ -102,12 +256,100 @@
   margin: 0;
 }
 
-.border-top-line {
-  border-top: 2px solid #000;
+.flat-card-footer-branding {
+  display: flex;
+  justify-content: space-between;
+  border-top: 2px solid #000000;
   padding-top: 12px;
-  width: 100%;
+  margin-top: 10px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #444444;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
-.brutalist-flashcard-container.adaptive-height {
-  height: 440px;
+/* ==========================================================================
+   4. NAVIGATION STEPMOTOR CONTROLS
+   ========================================================================== */
+.readview-controls-row {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+}
+
+.readview-nav-btn {
+  background: #ffffff;
+  border: 2px solid #000000;
+  padding: 16px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 5px 5px 0px #000000;
+  transition: all 0.15s ease;
+}
+
+.readview-nav-btn:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0px #000000;
+}
+
+.readview-nav-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0px #000000;
+}
+
+.readview-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 3px 3px 0px #000000 !important;
+}
+
+.readview-nav-btn.readview-primary-action {
+  background-color: #ffee00;
+}
+
+.readview-nav-btn.readview-primary-action:hover {
+  box-shadow: 8px 8px 0px #0071e3;
+}
+
+.readview-nav-btn.readview-finish-action {
+  background-color: #34c759;
+  color: #ffffff;
+}
+
+.readview-nav-btn.readview-finish-action:hover {
+  box-shadow: 8px 8px 0px #000000;
+}
+
+/* Processing Spinner */
+.readview-center-loader {
+  display: flex;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+}
+
+.readview-spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #000000;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  animation: readviewSpin 0.8s linear infinite;
+}
+
+@keyframes readviewSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive viewports patches */
+@media (max-width: 768px) {
+  .flat-readview-layout { padding: 20px 5%; }
+  .readview-nav-row { flex-direction: column; gap: 15px; align-items: stretch; }
+  .flat-brutalist-deck-card { height: 520px; padding: 20px; }
+  .flat-card-question-box h3 { font-size: 1.25rem; }
 }
