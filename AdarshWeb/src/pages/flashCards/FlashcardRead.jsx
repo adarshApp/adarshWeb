@@ -12,9 +12,9 @@ export default function FlashcardRead() {
 
   // Safe routing parameters interception with dynamic fallbacks
   const { topicSlug, classLevel, board, subject } = location.state || {
-    topicSlug: "circuit-solving",
-    classLevel: "class-12",
-    board: "CBSE",
+    topicSlug: "human-eye-and-colorful-world",
+    classLevel: "class-10",
+    board: "BSE", // Support for Board of Secondary Education Odisha
     subject: "physics",
   };
 
@@ -33,8 +33,7 @@ export default function FlashcardRead() {
     try {
       setLoading(true);
 
-      // Secure dynamic string sanitation matrices
-      const cleanClass = classLevel ? classLevel.toLowerCase() : "class-12";
+      const cleanClass = classLevel ? classLevel.toLowerCase() : "class-10";
       const cleanBoard = board ? board.toUpperCase() : "CBSE";
       const cleanSubject = subject ? subject.toLowerCase() : "physics";
 
@@ -49,30 +48,17 @@ export default function FlashcardRead() {
 
       const data = await res.json();
 
+      /* ---------- FIXED: Secure object extraction directly from array matrix data wrappers ---------- */
       if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-        setChapter(data.data);
+        setChapter(data.data); // Save whole object containing title, desc, and theory array
+      } else if (data && data.theory) {
+        setChapter(data);
       } else {
         throw new Error("No flashcard data found");
       }
     } catch (err) {
       console.error("Backend content stream link refused:", err);
-      // Clean Neo-Brutalist offline recovery mockup parameters if Render instance is sleeping
-      setChapter({
-        title: "Acids & Acidity – Master Flashcards",
-        icon: "🧪",
-        difficulty: "Medium–Hard",
-        weightage: "Very High (JEE Main + Advanced)",
-        estTime: "35 mins",
-        description: "Complete JEE flashcard deck on acids and acidity covering pKa, structural effects, solvent effects, relative acid strengths, and exam-favorite rules.",
-        theory: [
-          { type: "highlight", text: "Acids & Acidity – Core Idea", color: "#F59E0B" },
-          { type: "theory", text: "Brønsted–Lowry Acid: A species that donates H⁺. Acid strength depends on stability of its conjugate base." },
-          { type: "theory", text: "Stronger acid ⇢ more stable conjugate base." },
-          { type: "highlight", text: "📘 Flash Card 1: Strength of Acid", color: "#22C55E" },
-          { type: "theory", text: "Strength of an acid is its ability to lose H⁺ in a given medium measured using Ka." },
-          { type: "formula", text: "pKa = −log Ka", color: "#16A34A" }
-        ]
-      });
+      setChapter(null);
     } finally {
       setLoading(false);
     }
@@ -112,24 +98,24 @@ export default function FlashcardRead() {
           </div>
         </header>
 
-        {/* INTEGRATED CARD CONTAINER (Skins to your exact image blueprint) */}
+        {/* INTEGRATED CARD CONTAINER */}
         <div className="tactics-brutalist-card">
           <div className="card-scroll-body">
             
             {/* Title Section */}
             <h1 className="flashcard-title">
-              <span className="card-icon">{chapter.icon || "📘"}</span> {chapter.title}
+              <span className="card-icon">{chapter.icon || "👁️"}</span> {chapter.title}
             </h1>
 
             {/* Meta Parameters Row */}
             <div className="meta-row">
               <div className="meta-pill">
                 <ShieldAlert size={14} />
-                <span>DIFFICULTY: {String(chapter.difficulty || "MEDIUM").toUpperCase()}</span>
+                <span>{String(chapter.difficulty || "MEDIUM").toUpperCase()}</span>
               </div>
               <div className="meta-pill">
                 <Clock size={14} />
-                <span>EST TIME: {String(chapter.estTime || "20 MINS").toUpperCase()}</span>
+                <span>{String(chapter.estTime || "20 MINS").toUpperCase()}</span>
               </div>
             </div>
 
