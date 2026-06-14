@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShieldAlert, Clock, HelpCircle, BookOpen } from "lucide-react";
-import "./flashcardRead.css"; // Using a dedicated clean style sheet
+import "./FlashcardRead.css"; // Using a dedicated clean style sheet
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://abarsh-backend.onrender.com";
 
