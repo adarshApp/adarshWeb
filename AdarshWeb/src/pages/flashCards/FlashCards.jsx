@@ -9,28 +9,38 @@ const API_BASE_URL =
 export default function FlashcardPage() {
   const navigate = useNavigate();
 
+  /* ---------- FIXED: Added missing state hooks ---------- */
+  const [topics, setTopics] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedBoard, setSelectedBoard] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("physics");
 
+  // 1. Single, safe implementation of localStorage tracking
   const loadUserData = () => {
-    const userData = localStorage.getItem("user");
+    try {
+      const userData = localStorage.getItem("user");
 
-    if (!userData) {
+      if (!userData) {
+        setSelectedClass("class-12");
+        setSelectedBoard("CBSE");
+        return;
+      }
+
+      const user = JSON.parse(userData);
+      setSelectedBoard(user.board || "CBSE");
+      setSelectedClass(
+        user.className
+          ? user.className.toLowerCase().replace(/\s+/g, "-")
+          : "class-12"
+      );
+    } catch (err) {
+      console.error("Failed to parse local user payload data:", err);
       setSelectedClass("class-12");
       setSelectedBoard("CBSE");
-      return;
     }
-
-    const user = JSON.parse(userData);
-
-    setSelectedBoard(user.board || "CBSE");
-
-    setSelectedClass(
-      user.className
-        ? user.className.toLowerCase().replace(" ", "-")
-        : "class-12",
-    );
   };
 
   useEffect(() => {
@@ -42,23 +52,8 @@ export default function FlashcardPage() {
       fetchTopicDecks();
     }
   }, [selectedClass, selectedBoard, selectedSubject]);
-  const loadUserData = () => {
-    const userData = localStorage.getItem("user");
 
-    if (!userData) {
-      setSelectedClass("class-12");
-      setSelectedBoard("CBSE");
-      return;
-    }
-
-    const user = JSON.parse(userData);
-
-    setSelectedBoard(user.board);
-
-    setSelectedClass(user.className.toLowerCase().replace(" ", "-"));
-  };
-
-  // 1. Fetch main topics list from your explicit route
+  // 2. Fetch main topics list from your explicit route
   async function fetchTopicDecks() {
     try {
       setLoading(true);
@@ -100,6 +95,7 @@ export default function FlashcardPage() {
       },
     });
   };
+
   const cleanTitle = (slug) => {
     return slug
       .replace(/-/g, " ")
