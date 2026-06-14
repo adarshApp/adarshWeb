@@ -39,45 +39,69 @@ export default function Dashboard() {
       setLoading(true);
 
       const token = localStorage.getItem("token");
-      const board = localStorage.getItem("board");
-      const classLevel = localStorage.getItem("classLevel");
 
       if (!token) {
         navigate("/login");
         return;
       }
 
+      // 1. Fetch live profile data from backend
       const userRes = await fetch(`${API_BASE_URL}/api/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const userData = await userRes.json();
-      setUserInfo(userData);
+      
+      // Extract the nested user data correctly based on your API controller payload structure
+      const userProfile = userData.user || userData;
+      setUserInfo(userProfile);
+
+      // 2. Safeguard fallback onboarding check if data hasn't synced locally yet
+      const board = userProfile.board || localStorage.getItem("board");
+      const className = userProfile.className || localStorage.getItem("className");
+
+      if (!board || !className) {
+        navigate("/onboarding", { replace: true });
+        return;
+      }
 
       const subjectList = ["physics", "chemistry", "mathematics", "biology"];
 
+      // 3. Coordinate parallel requests using synchronized naming conventions
       const finalData = await Promise.all(
         subjectList.map(async (sub) => {
-          const syllabusRes = await fetch(
-            `${API_BASE_URL}/api/syllabus/${userData.classLevel}/${userData.board.toLowerCase()}/${sub}`,
-          );
-          const syllabus = await syllabusRes.json();
+          try {
+            const syllabusRes = await fetch(
+              `${API_BASE_URL}/api/syllabus/${className}/${board.toLowerCase()}/${sub}`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            const syllabus = await syllabusRes.json();
 
-          return {
-            name: syllabus.subject || syllabus.name || sub.toUpperCase(),
-            slug: sub,
-            totalChapters:
-              syllabus.chapters?.length || syllabus.units?.length || 0,
-            completedChapters: 0,
-            color:
-              sub === "physics"
-                ? "#4F46E5"
-                : sub === "chemistry"
-                  ? "#D946EF"
-                  : sub === "mathematics"
-                    ? "#0EA5E9"
-                    : "#10B981",
-          };
-        }),
+            return {
+              name: syllabus.subject || syllabus.name || sub.toUpperCase(),
+              slug: sub,
+              totalChapters:
+                syllabus.chapters?.length || syllabus.units?.length || 0,
+              completedChapters: 0,
+              color:
+                sub === "physics"
+                  ? "#4F46E5"
+                  : sub === "chemistry"
+                    ? "#D946EF"
+                    : sub === "mathematics"
+                      ? "#0EA5E9"
+                      : "#10B981",
+            };
+          } catch (fetchErr) {
+            console.error(`Error fetching syllabus for ${sub}:`, fetchErr);
+            return {
+              name: sub.toUpperCase(),
+              slug: sub,
+              totalChapters: 0,
+              completedChapters: 0,
+              color: "#666",
+            };
+          }
+        })
       );
 
       setSubjects(finalData);
@@ -105,7 +129,7 @@ export default function Dashboard() {
         </button>
 
         <span className="header-title">
-          {userInfo?.board} • Class {userInfo?.classLevel}
+          {userInfo?.board} • Class {userInfo?.className}
         </span>
 
         <button className="icon-btn" onClick={() => navigate("/profile")}>
@@ -139,9 +163,9 @@ export default function Dashboard() {
 
       {/* SUBJECT CARDS */}
       {subjects.map((item) => {
-        const progress = Math.round(
-          (item.completedChapters / item.totalChapters) * 100,
-        );
+        const progress = item.totalChapters > 0 
+          ? Math.round((item.completedChapters / item.totalChapters) * 100)
+          : 0;
 
         return (
           <div
@@ -149,7 +173,7 @@ export default function Dashboard() {
             className="subject-card"
             onClick={() =>
               navigate(
-                `/chapter/${userInfo.classLevel}/${userInfo.board.toLowerCase()}/${item.slug}`,
+                `/chapter/${userInfo?.className}/${userInfo?.board?.toLowerCase()}/${item.slug}`,
               )
             }
           >
