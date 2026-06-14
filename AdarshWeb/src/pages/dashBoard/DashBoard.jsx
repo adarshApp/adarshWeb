@@ -13,26 +13,28 @@ import {
   Calculator,
   Atom,
   Dna,
-  BookOpen
+  BookOpen,
+  LogOut,
+  LayoutDashboard
 } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-/* ---------- ICON MAPS (To Match Mobile Styling) ---------- */
+/* ---------- ICON MAPS (Black for high-contrast visibility) ---------- */
 const toolIcons = {
-  "Notes AI": <FileText size={24} color="#B8FF5A" />,
-  "Roadmaps": <Map size={24} color="#B8FF5A" />,
-  "Daily Tracker": <Calendar size={24} color="#B8FF5A" />,
-  "Flash Quiz": <Brain size={24} color="#B8FF5A" />,
-  "Mock Tests": <Trophy size={24} color="#B8FF5A" />,
-  "AI Tutor": <Bot size={24} color="#B8FF5A" />,
+  "Notes AI": <FileText size={24} color="#000" />,
+  "Roadmaps": <Map size={24} color="#000" />,
+  "Daily Tracker": <Calendar size={24} color="#000" />,
+  "Flash Quiz": <Brain size={24} color="#000" />,
+  "Mock Tests": <Trophy size={24} color="#000" />,
+  "AI Tutor": <Bot size={24} color="#000" />,
 };
 
 const subjectIcons = {
-  mathematics: <Calculator size={32} color="#000" />,
-  physics: <Atom size={32} color="#000" />,
-  biology: <Dna size={32} color="#000" />,
-  chemistry: <BookOpen size={32} color="#000" />,
+  mathematics: <Calculator size={28} color="#000" />,
+  physics: <Atom size={28} color="#000" />,
+  biology: <Dna size={28} color="#000" />,
+  chemistry: <BookOpen size={28} color="#000" />,
 };
 
 export default function Dashboard() {
@@ -65,26 +67,36 @@ export default function Dashboard() {
 
       const finalData = await Promise.all(
         subjectList.map(async (sub) => {
-          const syllabusRes = await fetch(
-            `${API_BASE_URL}/api/syllabus/${userData.classLevel}/${userData.board.toLowerCase()}/${sub}`,
-          );
-          const syllabus = await syllabusRes.json();
+          try {
+            const syllabusRes = await fetch(
+              `${API_BASE_URL}/api/syllabus/${userData.classLevel}/${userData.board.toLowerCase()}/${sub}`,
+            );
+            const syllabus = await syllabusRes.json();
 
-          // Match React Native colors exactly
-          const colorMap = {
-            mathematics: "#FF7D6A",
-            physics: "#D9FFB5",
-            biology: "#D9D1FF",
-            chemistry: "#7EC8FF",
-          };
+            // Saturated blocky colors for background grids
+            const colorMap = {
+              mathematics: "#FF7D6A",
+              physics: "#B8FF5A", 
+              biology: "#D9D1FF",
+              chemistry: "#7EC8FF",
+            };
 
-          return {
-            name: syllabus.subject || syllabus.name || sub.charAt(0).toUpperCase() + sub.slice(1),
-            slug: sub,
-            totalChapters: syllabus.chapters?.length || syllabus.units?.length || 15, // Fallback placeholder
-            completedChapters: 3, // Fallback placeholder to match 12/20 (60%) mobile preview total
-            color: colorMap[sub] || "#FFF",
-          };
+            return {
+              name: syllabus.subject || syllabus.name || sub.charAt(0).toUpperCase() + sub.slice(1),
+              slug: sub,
+              totalChapters: syllabus.chapters?.length || syllabus.units?.length || 15,
+              completedChapters: 3, 
+              color: colorMap[sub] || "#FFF",
+            };
+          } catch (e) {
+            return {
+              name: sub.charAt(0).toUpperCase() + sub.slice(1),
+              slug: sub,
+              totalChapters: 15,
+              completedChapters: 3,
+              color: "#FFF"
+            };
+          }
         }),
       );
 
@@ -96,6 +108,11 @@ export default function Dashboard() {
     }
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   if (loading) {
     return (
       <div className="dashboard-center">
@@ -104,7 +121,6 @@ export default function Dashboard() {
     );
   }
 
-  // Study tools structure mapping to your router paths
   const tools = [
     { title: "Notes AI", path: "/notes/NotesScreen" },
     { title: "Roadmaps", path: "/roadmap" },
@@ -115,92 +131,151 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="mobile-viewport-container">
-      <div className="mobile-scroll-wrapper">
+    <div className="bold-dashboard-layout">
+      
+      {/* FLOATING DECORATIVE BACKGROUND VOXELS */}
+      <span className="voxel-item v-atom">⚛️</span>
+      <span className="voxel-item v-book">📚</span>
+      
+      {/* SIDEBAR NAVIGATION */}
+      <aside className="bold-sidebar">
+        <div className="sidebar-logo">
+          <LayoutDashboard size={20} color="#000" />
+          <span>PORTAL</span>
+        </div>
         
-        {/* HEADER */}
-        <div className="mobile-header">
-          <span className="mobile-title">Discover</span>
-          <button className="profile-btn" onClick={() => navigate("/profile")}>
-            <User size={20} color="#FFF" />
+        <nav className="sidebar-links">
+          <button className="side-link active">DASHBOARD</button>
+          <button className="side-link" onClick={() => navigate("/profile")}>PROFILE</button>
+          <button className="side-link" onClick={() => navigate("/roadmap")}>MY ROADMAP</button>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <button className="logout-pill-btn" onClick={handleLogout}>
+            <LogOut size={16} /> LOG OUT
           </button>
         </div>
+      </aside>
 
-        {/* HERO CARDS (Horizontal Scroll) */}
-        <div className="hero-scroll-container">
-          {/* Flashcards Hero */}
-          <div 
-            className="hero-card bright-card" 
-            onClick={() => navigate("/flashcards")}
-          >
-            <h2 className="hero-title">Flashcards</h2>
-            <p className="hero-sub">124 Cards Available</p>
-            <div className="hero-btn">
-              <span className="hero-btn-text">Start Learning</span>
+      {/* MAIN CONTAINER CONTENT */}
+      <main className="bold-main-viewport">
+        
+        {/* TOP BAR BRAND ROW */}
+        <header className="bold-dashboard-header">
+          <div>
+            <h1 className="welcome-heading">
+              Hey, <span className="italic-accent">{userInfo?.name || "Student"}</span>!
+            </h1>
+            <p className="welcome-sub">Here is your academic command station for today.</p>
+          </div>
+          
+          <div className="header-badge-action" onClick={() => navigate("/profile")}>
+            <div className="avatar-box">
+              {userInfo?.name ? userInfo.name.charAt(0).toUpperCase() : <User size={16} />}
             </div>
+            <span>{userInfo?.email || "STUDENT ACCOUNT"}</span>
           </div>
+        </header>
 
-          {/* Streak Hero */}
-          <div className="hero-card dark-card">
-            <Flame size={28} color="#B8FF5A" />
-            <h2 className="dark-hero-title">18 Day Streak</h2>
-            <p className="dark-hero-sub">Keep your learning momentum alive.</p>
-          </div>
+        {/* 3-COLUMN HERO STATS CARD BLOCK */}
+        <section className="section-block">
+          <div className="hero-feature-grid">
+            
+            {/* Flashcards Target */}
+            <div className="bold-stat-card yellow-accent" onClick={() => navigate("/flashcards")}>
+              <span className="card-micro-badge">READY</span>
+              <h2 className="card-main-title">Flashcards</h2>
+              <p className="card-description-text">124 Decks available to test retention.</p>
+              <button className="card-action-trigger">START LEARNING →</button>
+            </div>
 
-          {/* Roadmap Hero */}
-          <div className="hero-card dark-card" onClick={() => navigate("/roadmap")}>
-            <Map size={28} color="#B8FF5A" />
-            <h2 className="dark-hero-title">{userInfo?.board || "JEE"} Roadmap</h2>
-            <p className="dark-hero-sub">78% completed this month.</p>
-          </div>
-        </div>
-
-        {/* STUDY TOOLS SECTION */}
-        <h2 className="section-heading">Study Tools</h2>
-        <div className="tools-grid">
-          {tools.map((tool, index) => (
-            <div 
-              key={index} 
-              className="tool-card" 
-              onClick={() => navigate(tool.path)}
-            >
-              <div className="tool-icon-wrapper">
-                {toolIcons[tool.title]}
+            {/* Streak Counter */}
+            <div className="bold-stat-card black-accent">
+              <div className="card-row-header">
+                <span className="card-micro-badge yellow-accent">STREAK</span>
+                <Flame size={24} color="#ffee00" />
               </div>
-              <span className="tool-text">{tool.title}</span>
+              <h2 className="card-main-title light-text">18 Days Running</h2>
+              <p className="card-description-text light-text">Keep your learning momentum burning.</p>
             </div>
-          ))}
-        </div>
 
-        {/* SYLLABUS SECTION */}
-        <h2 className="section-heading">Your syllabus</h2>
-        <div className="subject-grid">
-          {subjects.map((item) => (
-            <div
-              key={item.slug}
-              className="subject-card-mobile"
-              style={{ backgroundColor: item.color }}
-              onClick={() => navigate(`/chapter/${userInfo.classLevel}/${userInfo.board.toLowerCase()}/${item.slug}`)}
-            >
-              <span className="subject-title-mobile">{item.name}</span>
-              {subjectIcons[item.slug] || <BookOpen size={32} color="#000" />}
+            {/* Target Goal Roadmap */}
+            <div className="bold-stat-card blue-accent" onClick={() => navigate("/roadmap")}>
+              <span className="card-micro-badge white-bg">TARGET</span>
+              <h2 className="card-main-title light-text">{userInfo?.board || "JEE"} Roadmap</h2>
+              <p className="card-description-text light-text">78% completed this active month cycle.</p>
             </div>
-          ))}
-        </div>
 
-        {/* PROGRESS CARD */}
-        <h2 className="section-heading">Your Progress</h2>
-        <div className="progress-card-mobile">
-          <h3 className="progress-title-mobile">Weekly Goal</h3>
-          <p className="progress-text-mobile">12 / 20 Chapters Completed</p>
-          <div className="progress-bar-bg-mobile">
-            <div className="progress-bar-fill-mobile" style={{ width: "60%" }} />
           </div>
-        </div>
+        </section>
 
-        {/* Bottom padding spacing matching native */}
-        <div style={{ height: "100px" }} />
-      </div>
+        {/* DOUBLE COLUMN LAYOUT ENGINE */}
+        <div className="two-column-workspace">
+          
+          {/* CONTENT COLLATERAL (LEFT PANEL) */}
+          <div className="workspace-left">
+            
+            {/* TOOLS GRID SECTION */}
+            <section className="section-block">
+              <h2 className="bold-block-label">STUDY TOOLS</h2>
+              <div className="tools-brutalist-grid">
+                {tools.map((tool, index) => (
+                  <div key={index} className="tool-brutalist-card" onClick={() => navigate(tool.path)}>
+                    <div className="tool-icon-square">{toolIcons[tool.title]}</div>
+                    <span className="tool-title-label">{tool.title}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* SYLLABUS PANEL SECTION */}
+            <section className="section-block">
+              <h2 className="bold-block-label">YOUR SYLLABUS</h2>
+              <div className="syllabus-brutalist-grid">
+                {subjects.map((item) => (
+                  <div
+                    key={item.slug}
+                    className="subject-brutalist-card"
+                    style={{ backgroundColor: item.color }}
+                    onClick={() => navigate(`/chapter/${userInfo?.classLevel}/${userInfo?.board?.toLowerCase()}/${item.slug}`)}
+                  >
+                    <div className="subject-header-row">
+                      <span className="subject-title-text">{item.name}</span>
+                      {subjectIcons[item.slug] || <BookOpen size={24} color="#000" />}
+                    </div>
+                    <div className="subject-footer-pill">
+                      <span>{item.completedChapters} / {item.totalChapters} CHAPTERS</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* KPI SIDEBAR REGION (RIGHT PANEL) */}
+          <div className="workspace-right">
+            <section className="section-block sticky-card-holder">
+              <h2 className="bold-block-label">YOUR PROGRESS</h2>
+              <div className="progress-brutalist-card">
+                <span className="card-micro-badge blue-accent-badge">GOAL KPI</span>
+                <h3 className="progress-card-header">Weekly Status</h3>
+                
+                <p className="progress-numerical-readout">12 / 20 Chapters Finished</p>
+                
+                <div className="brutalist-progress-track">
+                  <div className="brutalist-progress-fill" style={{ width: "60%" }} />
+                </div>
+
+                <div className="neo-insights-box">
+                  <span className="insight-title">METRIC INSIGHTS:</span>
+                  <p>Finish 2 remaining chapters of Chemistry to hit your weekly target line.</p>
+                </div>
+              </div>
+            </section>
+          </div>
+
+        </div>
+      </main>
     </div>
   );
 }
