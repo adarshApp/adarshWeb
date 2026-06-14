@@ -21,6 +21,7 @@ export default function FlashCards() {
   async function loadCards() {
     try {
       setLoading(true);
+
       const res = await fetch(
         `${API_BASE_URL}/api/content/class-12/CBSE/${activeSubject}/flashcard`,
       );
@@ -29,24 +30,29 @@ export default function FlashCards() {
 
       if (data.success) {
         setCards(data.files);
+      } else {
+        setCards([]);
       }
-      const data = await res.json();
-      setCards(data);
     } catch (e) {
       console.error("Error loading cards", e);
+      setCards([]);
     } finally {
       setLoading(false);
     }
   }
 
   /* -------- Load Detail -------- */
-  async function openCard(card) {
+  async function openCard(deckName) {
     try {
-      const res = await fetch(`${API_BASE_URL}/api/flashcards/${card.id}`);
+      const res = await fetch(
+        `${API_BASE_URL}/api/content/class-12/CBSE/${activeSubject}/flashcard/${deckName}`,
+      );
+
       const details = await res.json();
-      setSelectedCard({ ...card, ...details });
-    } catch {
-      console.error("Detail load failed");
+
+      setSelectedCard(details);
+    } catch (error) {
+      console.error("Detail load failed", error);
     }
   }
 
@@ -85,18 +91,16 @@ export default function FlashCards() {
       {/* ===== CARD LIST ===== */}
       <div className="card-grid">
         {cards.map((card) => (
-          <div
-            key={card.id}
-            className="list-card"
-            onClick={() => openCard(card)}
-          >
-            <div className="icon-box">{card.icon}</div>
+          <div key={card} className="list-card" onClick={() => openCard(card)}>
+            <div className="icon-box">📚</div>
 
             <div className="list-content">
-              <h3>{card.title}</h3>
-              <p>
-                {card.difficulty.toUpperCase()} • {card.weightage}
-              </p>
+              <h3>
+                {card
+                  .replaceAll("-", " ")
+                  .replace(/\b\w/g, (c) => c.toUpperCase())}
+              </h3>
+              <p>Flashcard Deck</p>
             </div>
 
             <span className="arrow">→</span>
