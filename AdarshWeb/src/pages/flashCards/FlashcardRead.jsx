@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, RotateCw, CheckCircle, HelpCircle } from "lucide-react";
+import { ArrowLeft, RotateCw, CheckCircle, HelpCircle, ShieldAlert, Clock } from "lucide-react";
 import "./flashCards.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "https://abarsh-backend.onrender.com";
@@ -8,8 +8,8 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "https://abarsh-backend.onr
 export default function FlashcardRead() {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Extract state tracking route variables safely, fallback onto constants if navigated directly
+
+  // 1. Safe Routing State Interception with dynamic fallbacks
   const { topicSlug, classLevel, board, subject } = location.state || {
     topicSlug: "circuit-solving",
     classLevel: "class-12",
@@ -17,6 +17,8 @@ export default function FlashcardRead() {
     subject: "physics"
   };
 
+  // Content Hooks
+  const [deckMeta, setDeckMeta] = useState(null);
   const [currentCards, setCurrentCards] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,26 +34,49 @@ export default function FlashcardRead() {
       setIsFlipped(false);
       setCurrentIndex(0);
 
+      // Fetch from exact API pattern seen in your React Native fetch: /api/content/:class/:board/:subject/flashcard/:topic
       const res = await fetch(`${API_BASE_URL}/api/content/${classLevel}/${board}/${subject}/flashcard/${topicSlug}`);
       const data = await res.json();
 
-      /* ---------- FIXED: Changed data.data?.theory to data.data?.theory ---------- */
-      if (data.success && Array.isArray(data.data) && data.data?.theory) {
-        setCurrentCards(chunkTheoryIntoCards(data.data.theory));
-      } else if (data && Array.isArray(data.flashcards)) {
-        setCurrentCards(data.flashcards);
-      } else if (Array.isArray(data)) {
-        setCurrentCards(data);
+      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+        const rawPayload = data.data;
+        
+        // Save metadata fields (icon, difficulty, weightage, estTime, description)
+        setDeckMeta({
+          title: rawPayload.title,
+          icon: rawPayload.icon || "📘",
+          difficulty: rawPayload.difficulty || "Medium",
+          weightage: rawPayload.weightage || "High",
+          estTime: rawPayload.estTime || "15 mins",
+          description: rawPayload.description
+        });
+
+        if (Array.isArray(rawPayload.theory)) {
+          setCurrentCards(chunkTheoryIntoCards(rawPayload.theory));
+        } else {
+          throw new Error("Theory blocks missing from node");
+        }
       } else {
-        throw new Error("No readable flashcard arrays standard format found.");
+        throw new Error("No payload tracked inside backend cluster data block");
       }
     } catch (err) {
       console.error("Error reading single card file data:", err);
-      // Brutalist recovery placeholder schema
+      // Clean Neo-Brutalist structural layout recovery placeholder fallback
+      setDeckMeta({
+        title: cleanTitle(topicSlug),
+        icon: "⚡",
+        difficulty: "MEDIUM–HARD",
+        estTime: "25 MINS",
+        description: "Error communicating with Render cloud infrastructure clusters. Running static backup layout parameters."
+      });
       setCurrentCards([
-        { 
-          question: `Review the essential mechanics of [${cleanTitle(topicSlug)}]`, 
-          answer: "Verify formula metrics and loop rules corresponding to this specific physics chapter node." 
+        {
+          title: "Flashcard Error Recovery Node",
+          question: "Failed to securely parse runtime tokens from API endpoint.",
+          answerBlocks: [
+            { type: "highlight", text: "Troubleshooting Action Required" },
+            { type: "theory", text: "Verify your server instance is live and CORS permissions accept traffic from local origins." }
+          ]
         }
       ]);
     } finally {
@@ -59,28 +84,34 @@ export default function FlashcardRead() {
     }
   }
 
+  // 2. Chunks raw theory lists into flashcards based on "Flashcard X:" headers
   function chunkTheoryIntoCards(theoryArray) {
     const flashcardsList = [];
     let currentChunk = null;
 
     theoryArray.forEach((item) => {
-      if (item.type === "highlight" && item.text.startsWith("Flashcard")) {
+      if (item.type === "highlight" && (item.text.startsWith("Flashcard") || item.text.startsWith("Card"))) {
         if (currentChunk) flashcardsList.push(currentChunk);
         currentChunk = { title: item.text, question: "", answerBlocks: [] };
       } else {
-        if (!currentChunk) currentChunk = { title: "Overview Module Core", question: "", answerBlocks: [] };
-        if (item.type === "theory" && !currentChunk.question) {
-          currentChunk.question = `Explain the concept: ${item.text}`;
+        if (!currentChunk) {
+          currentChunk = { title: "Foundational Insight Node", question: "", answerBlocks: [] };
         }
-        currentChunk.answerBlocks.push(item);
+        // Capture the first theory point to use as the question text on the front of the card
+        if (item.type === "theory" && !currentChunk.question) {
+          currentChunk.question = item.text;
+        } else {
+          currentChunk.answerBlocks.push(item);
+        }
       }
     });
     if (currentChunk) flashcardsList.push(currentChunk);
 
-    return flashcardsList.map(card => ({
+    return flashcardsList.map((card) => ({
       ...card,
-      question: card.question || `Analyze the mathematical layout rules of ${card.title}`,
-      isStructuredPayload: true
+      question: card.question || `Analyze the conceptual layout formulas and statements inside ${card.title}`,
+      // If the header card contains a theory item on the front, copy it to the answer blocks so it isn't lost
+      answerBlocks: card.answerBlocks.length === 0 && card.question ? [{ type: "theory", text: card.question }] : card.answerBlocks
     }));
   }
 
@@ -100,6 +131,7 @@ export default function FlashcardRead() {
     <div className="bold-flashcard-layout">
       <main className="flashcard-viewport">
         
+        {/* TOP VIEWPORT NAVIGATION ACTIONS HEADER */}
         <header className="flashcard-nav-row">
           <button className="bold-back-btn" onClick={() => navigate(-1)}>
             <ArrowLeft size={16} strokeWidth={3} />
@@ -110,12 +142,35 @@ export default function FlashcardRead() {
           </div>
         </header>
 
+        {/* CORE TITLE SUMMARY DISPLAY AREA */}
+        {deckMeta && (
+          <div className="flash-welcome-block">
+            <h1 className="welcome-heading">
+              {deckMeta.icon} {deckMeta.title}
+            </h1>
+            
+            <div className="meta-badge-row">
+              <div className="brutalist-meta-badge">
+                <ShieldAlert size={14} />
+                <span>DIFFICULTY: {deckMeta.difficulty.toUpperCase()}</span>
+              </div>
+              <div className="brutalist-meta-badge">
+                <Clock size={14} />
+                <span>TIME VALUE: {deckMeta.estTime.toUpperCase()}</span>
+              </div>
+            </div>
+
+            <p className="welcome-sub" style={{ marginTop: "14px" }}>{deckMeta.description}</p>
+          </div>
+        )}
+
+        {/* DATA COMPONENT HUB */}
         <div className="modal-card-workspace">
           
-          {/* TIMELINE TRACK PROGRESS STRIP */}
+          {/* PROGRESS PERCENTAGE STATUS BAR */}
           <div className="modal-progress-strip">
             <div className="progress-numbers">
-              <span>{activeCard?.title || "ACTIVE STUDY ELEMENT"}</span>
+              <span>{activeCard?.title || "CORE STUDY ELEMENT"}</span>
               <strong>{currentIndex + 1} / {currentCards.length}</strong>
             </div>
             <div className="brutalist-progress-track">
@@ -126,75 +181,70 @@ export default function FlashcardRead() {
             </div>
           </div>
 
-          {/* 3D BRUTALIST FLIP ELEMENT TRACKER */}
+          {/* 3D INTERACTIVE FLIPPER ELEMENT */}
           <div 
             className={`brutalist-flashcard-container adaptive-height ${isFlipped ? "flipped" : ""}`}
             onClick={() => setIsFlipped(!isFlipped)}
           >
             <div className="flashcard-inner">
               
-              {/* FRONT FACE SIDE */}
+              {/* FRONT CARD FACE (Question context prompt side) */}
               <div className="flashcard-side front-side yellow-accent">
                 <div className="card-top-meta">
-                  <span className="side-badge">PROMPT INTERROGATION</span>
+                  <span className="side-badge">PROMPT / CHALLENGE</span>
                   <HelpCircle size={18} />
                 </div>
-                <div className="card-core-body alignment-top">
+                <div className="card-core-body">
                   <p className="card-text-display dynamic-fontSize">{activeCard?.question}</p>
                 </div>
                 <div className="card-action-hint">
                   <RotateCw size={14} />
-                  <span>TAP CARD TO EXECUTE DEEP ANALYSIS ROTATION</span>
+                  <span>TAP CARD AREA TO TRIGGER DATA DECODE INVERSION</span>
                 </div>
               </div>
 
-              {/* REVERSE FACE SIDE */}
-              <div className={`flashcard-side back-side ${activeCard?.isStructuredPayload ? "white-bg-brutalist" : "blue-accent"}`}>
+              {/* REVERSE CARD FACE (Dynamic payload parsing template) */}
+              <div className="flashcard-side back-side white-bg-brutalist">
                 <div className="card-top-meta">
-                  <span className="side-badge black-text bg-yellow">COMPILED THEOREM INSIGHTS</span>
+                  <span className="side-badge black-text bg-yellow">COMPILED MECHANICAL INSIGHTS</span>
                   <CheckCircle size={18} color="#000" />
                 </div>
                 
-                {/* ---------- FIXED: Handled event propagation down onto card text container click scopes ---------- */}
+                {/* stopping propagation ensures scrolling or tapping fields won't flip the card closed unexpectedly */}
                 <div className="card-scrollable-payload-area" onClick={(e) => e.stopPropagation()}>
-                  {activeCard?.isStructuredPayload ? (
-                    activeCard?.answerBlocks?.map((block, bIdx) => {
-                      if (block.type === "highlight") {
-                        return (
-                          <div key={bIdx} className="brutalist-payload-highlight" style={{ borderLeftColor: block.color || "#000" }}>
-                            <h4>{block.text}</h4>
-                          </div>
-                        );
-                      }
-                      if (block.type === "formula") {
-                        return (
-                          <div key={bIdx} className="brutalist-payload-formula">
-                            <code>{block.text}</code>
-                          </div>
-                        );
-                      }
+                  {activeCard?.answerBlocks?.map((block, bIdx) => {
+                    if (block.type === "highlight") {
                       return (
-                        <p key={bIdx} className="brutalist-payload-theory">• {block.text}</p>
+                        <div key={bIdx} className="brutalist-payload-highlight" style={{ borderLeftColor: block.color || "#000" }}>
+                          <h4>{block.text}</h4>
+                        </div>
                       );
-                    })
-                  ) : (
-                    <div className="card-core-body">
-                      <p className="card-text-display black-text">{activeCard?.answer}</p>
-                    </div>
-                  )}
+                    }
+                    if (block.type === "formula") {
+                      return (
+                        <div key={bIdx} className="brutalist-payload-formula">
+                          <code>{block.text}</code>
+                        </div>
+                      );
+                    }
+                    return (
+                      <p key={bIdx} className="brutalist-payload-theory">
+                        &bull; {block.text}
+                      </p>
+                    );
+                  })}
                 </div>
 
                 <div className="card-action-hint black-text border-top-line">
                   <RotateCw size={14} />
-                  <span>TAP TO RETURN TO CORE PROMPT</span>
+                  <span>TAP CARD TO RETURN TO CORE PROMPT</span>
                 </div>
               </div>
 
             </div>
           </div>
 
-          {/* USER SELECTION SYSTEM STEPPER CONTROLS */}
-          {/* ---------- FIXED: Added explicit e.stopPropagation() so clicking control buttons doesn't trigger card flipping ---------- */}
+          {/* STEPPER EXECUTION CONTROLS TOOLBAR */}
           <div className="modal-controls-row" onClick={(e) => e.stopPropagation()}>
             <button 
               className="brutalist-nav-control-btn"
@@ -216,7 +266,7 @@ export default function FlashcardRead() {
                 className="brutalist-nav-control-btn finish-action"
                 onClick={() => navigate(-1)}
               >
-                FINISH DECK ✓
+                FINISH CONFIG NODE ✓
               </button>
             )}
           </div>
