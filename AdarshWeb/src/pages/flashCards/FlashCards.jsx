@@ -9,7 +9,7 @@ const API_BASE_URL =
 export default function FlashcardPage() {
   const navigate = useNavigate();
 
-  /* ---------- FIXED: Added missing state hooks ---------- */
+  // State variables
   const [topics, setTopics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,8 +17,10 @@ export default function FlashcardPage() {
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedBoard, setSelectedBoard] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("physics");
+  
+  /* ---------- NEW: Track user stream goals to filter biology ---------- */
+  const [userStream, setUserStream] = useState("");
 
-  // 1. Single, safe implementation of localStorage tracking
   const loadUserData = () => {
     try {
       const userData = localStorage.getItem("user");
@@ -26,11 +28,16 @@ export default function FlashcardPage() {
       if (!userData) {
         setSelectedClass("class-12");
         setSelectedBoard("CBSE");
+        setUserStream("JEE"); // Default fallback
         return;
       }
 
       const user = JSON.parse(userData);
       setSelectedBoard(user.board || "CBSE");
+      
+      // Capturing target exam goals (e.g., JEE, NEET, GENERAL)
+      setUserStream(user.stream || user.goal || "JEE");
+
       setSelectedClass(
         user.className
           ? user.className.toLowerCase().replace(/\s+/g, "-")
@@ -40,6 +47,7 @@ export default function FlashcardPage() {
       console.error("Failed to parse local user payload data:", err);
       setSelectedClass("class-12");
       setSelectedBoard("CBSE");
+      setUserStream("JEE");
     }
   };
 
@@ -53,7 +61,7 @@ export default function FlashcardPage() {
     }
   }, [selectedClass, selectedBoard, selectedSubject]);
 
-  // 2. Fetch main topics list from your explicit route
+  // Fetch main topics list from explicit route
   async function fetchTopicDecks() {
     try {
       setLoading(true);
@@ -71,15 +79,16 @@ export default function FlashcardPage() {
       }
     } catch (err) {
       console.error("Error loading flashcard topics:", err);
-      setError("Failed to stream flashcard data from backend cluster.");
-      // Brutalist fallback if deployment is resting/offline
-      setTopics([
-        "circuit-solving",
-        "combination-of-resistors",
-        "krichhoff-s-laws",
-        "rotationalMotion",
-        "semiconductor1",
-      ]);
+      setError(`Failed to stream ${selectedSubject} data from backend cluster.`);
+      
+      // Fallback arrays updated to adaptively match selected subjects if API errors out
+      const localFallbacks = {
+        physics: ["circuit-solving", "combination-of-resistors", "krichhoff-s-laws", "rotationalMotion"],
+        mathematics: ["calculus-limits", "matrices-determinants", "vectors-3d"],
+        chemistry: ["organic-mechanisms", "electrochemistry", "chemical-bonding"],
+        biology: ["cell-division", "genetics-inheritance", "plant-physiology"]
+      };
+      setTopics(localFallbacks[selectedSubject] || localFallbacks.physics);
     } finally {
       setLoading(false);
     }
@@ -102,13 +111,18 @@ export default function FlashcardPage() {
       .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
   };
 
-  if (loading) {
-    return (
-      <div className="dashboard-center">
-        <div className="loader" />
-      </div>
-    );
-  }
+  /* ---------- NEW: Conditional Subject List Array Generation ---------- */
+  const baseSubjects = [
+    { id: "mathematics", label: "MATH" },
+    { id: "physics", label: "PHYSICS" },
+    { id: "chemistry", label: "CHEMISTRY" },
+    { id: "biology", label: "BIOLOGY" }
+  ];
+
+  // Strictly filter out biology if string markers mention JEE anywhere
+  const availableSubjects = userStream.toUpperCase().includes("JEE")
+    ? baseSubjects.filter(sub => sub.id !== "biology")
+    : baseSubjects;
 
   return (
     <div className="bold-flashcard-layout">
@@ -143,36 +157,62 @@ export default function FlashcardPage() {
           </p>
         </div>
 
-        {error && (
-          <div className="error-brutalist-banner">
-            <span>
-              ⚠️ API NOTE: Using offline dynamic local parameters. ({error})
-            </span>
-          </div>
-        )}
-
-        {/* ROADMAP.SH STYLE STUDY DECKS SELECTOR GRID */}
-        <div className="roadmap-deck-grid">
-          {topics.map((topic, idx) => (
-            <div
-              key={idx}
-              className="roadmap-topic-card"
-              onClick={() => handleTopicClick(topic)}
+        {/* ---------- NEW: DYNAMIC BRUTALIST SUBJECT TOP BAR ---------- */}
+        <div className="brutalist-subject-tabs">
+          {availableSubjects.map((sub) => (
+            <button
+              key={sub.id}
+              className={`subject-tab-btn ${selectedSubject === sub.id ? "active" : ""}`}
+              onClick={() => setSelectedSubject(sub.id)}
             >
-              <div className="card-left-design">
-                <div className="index-square">{idx + 1}</div>
-                <div className="topic-title-meta">
-                  <h3>{cleanTitle(topic)}</h3>
-                  <p>MODULE FILE NODE</p>
-                </div>
-              </div>
-              <div className="card-right-arrow">
-                <span>STUDY</span>
-                <ChevronRight size={18} strokeWidth={3} />
-              </div>
-            </div>
+              {sub.label}
+            </button>
           ))}
         </div>
+
+        {/* LOADING & DATA DISPLAY PORTS */}
+        {loading ? (
+          <div className="tab-loader-container">
+            <div className="loader" />
+          </div>
+        ) : (
+          <>
+            {error && (
+              <div className="error-brutalist-banner">
+                <span>⚠️ API NOTE: Using local fallback parameters. ({error})</span>
+              </div>
+            )}
+
+            {/* ROADMAP.SH STYLE STUDY DECKS SELECTOR GRID */}
+            <div className="roadmap-deck-grid">
+              {topics.length === 0 ? (
+                <div className="empty-state-card">
+                  <p>No active data modules uploaded for this subject segment yet.</p>
+                </div>
+              ) : (
+                topics.map((topic, idx) => (
+                  <div
+                    key={idx}
+                    className="roadmap-topic-card"
+                    onClick={() => handleTopicClick(topic)}
+                  >
+                    <div className="card-left-design">
+                      <div className="index-square">{idx + 1}</div>
+                      <div className="topic-title-meta">
+                        <h3>{cleanTitle(topic)}</h3>
+                        <p>{selectedSubject.toUpperCase()} MODULE NODE</p>
+                      </div>
+                    </div>
+                    <div className="card-right-arrow">
+                      <span>STUDY</span>
+                      <ChevronRight size={18} strokeWidth={3} />
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
