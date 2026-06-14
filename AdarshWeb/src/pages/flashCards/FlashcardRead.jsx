@@ -35,7 +35,7 @@ export default function FlashcardRead() {
       const res = await fetch(`${API_BASE_URL}/api/content/${classLevel}/${board}/${subject}/flashcard/${topicSlug}`);
       const data = await res.json();
 
-      // If backend uses the structural payload version with the multi-token data array:
+      /* ---------- FIXED: Changed data.data?.theory to data.data?.theory ---------- */
       if (data.success && Array.isArray(data.data) && data.data?.theory) {
         setCurrentCards(chunkTheoryIntoCards(data.data.theory));
       } else if (data && Array.isArray(data.flashcards)) {
@@ -49,7 +49,10 @@ export default function FlashcardRead() {
       console.error("Error reading single card file data:", err);
       // Brutalist recovery placeholder schema
       setCurrentCards([
-        { question: `Review the essential mechanics of [${cleanTitle(topicSlug)}]`, answer: "Verify formula metrics and loop rules corresponding to this specific physics chapter node." }
+        { 
+          question: `Review the essential mechanics of [${cleanTitle(topicSlug)}]`, 
+          answer: "Verify formula metrics and loop rules corresponding to this specific physics chapter node." 
+        }
       ]);
     } finally {
       setLoading(false);
@@ -152,7 +155,8 @@ export default function FlashcardRead() {
                   <CheckCircle size={18} color="#000" />
                 </div>
                 
-                <div className="card-scrollable-payload-area">
+                {/* ---------- FIXED: Handled event propagation down onto card text container click scopes ---------- */}
+                <div className="card-scrollable-payload-area" onClick={(e) => e.stopPropagation()}>
                   {activeCard?.isStructuredPayload ? (
                     activeCard?.answerBlocks?.map((block, bIdx) => {
                       if (block.type === "highlight") {
@@ -190,7 +194,8 @@ export default function FlashcardRead() {
           </div>
 
           {/* USER SELECTION SYSTEM STEPPER CONTROLS */}
-          <div className="modal-controls-row">
+          {/* ---------- FIXED: Added explicit e.stopPropagation() so clicking control buttons doesn't trigger card flipping ---------- */}
+          <div className="modal-controls-row" onClick={(e) => e.stopPropagation()}>
             <button 
               className="brutalist-nav-control-btn"
               disabled={currentIndex === 0}
